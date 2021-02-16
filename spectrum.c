@@ -35,6 +35,15 @@
 #include "machine.h"
 #include "memory_pages.h"
 #include "module.h"
+#ifdef BUILD_GPIO_MEMBRANE
+#include "peripherals/hermitretro/gpio_membrane.h"
+#endif
+#ifdef BUILD_GPIO_JOYSTICK
+#include "peripherals/hermitretro/gpio_joystick.h"
+#endif
+#ifdef BUILD_HERMITRETRO_ZXZERO
+#include "peripherals/hermitretro/hermitretro_zxzero.h"
+#endif
 #include "peripherals/printer.h"
 #include "peripherals/ula.h"
 #include "phantom_typist.h"
@@ -96,6 +105,15 @@ spectrum_frame_event_fn( libspectrum_dword last_tstates, int type,
   psg_frame();
   spectrum_frame();
   z80_interrupt();
+#ifdef BUILD_HERMITRETRO_ZXZERO
+  hermitretro_zxzero_poll();
+#endif
+#ifdef BUILD_GPIO_MEMBRANE
+  gpio_membrane_poll();
+#endif
+#ifdef BUILD_GPIO_JOYSTICK
+  gpio_joystick_poll();
+#endif
   ui_joystick_poll();
   timer_estimate_speed();
   debugger_add_time_events();

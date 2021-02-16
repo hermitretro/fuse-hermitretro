@@ -71,6 +71,18 @@
 #include "peripherals/disk/didaktik.h"
 #include "peripherals/disk/fdd.h"
 #include "peripherals/fuller.h"
+#if defined(BUILD_GPIO_JOYSTICK) || defined(BUILD_GPIO_MEMBRANE)
+#include "peripherals/hermitretro/gpio_common.h"
+#endif
+#ifdef BUILD_GPIO_JOYSTICK
+#include "peripherals/hermitretro/gpio_joystick.h"
+#endif
+#ifdef BUILD_GPIO_MEMBRANE
+#include "peripherals/hermitretro/gpio_membrane.h"
+#endif
+#ifdef BUILD_HERMITRETRO_ZXZERO
+#include "peripherals/hermitretro/hermitretro_zxzero.h"
+#endif
 #include "peripherals/ide/divide.h"
 #include "peripherals/ide/divmmc.h"
 #include "peripherals/ide/simpleide.h"
@@ -305,6 +317,18 @@ run_startup_manager( int *argc, char ***argv )
   event_register_startup();
   fdd_register_startup();
   fuller_register_startup();
+#if defined(BUILD_GPIO_JOYSTICK) || defined(BUILD_GPIO_MEMBRANE)
+  gpio_common_register_startup();
+#endif
+#ifdef BUILD_GPIO_MEMBRANE
+  gpio_membrane_register_startup();
+#endif
+#ifdef BUILD_GPIO_JOYSTICK
+  gpio_joystick_register_startup();
+#endif
+#ifdef BUILD_HERMITRETRO_ZXZERO
+  hermitretro_zxzero_register_startup();
+#endif
   if1_register_startup();
   if2_register_startup();
   joystick_register_startup();
@@ -478,6 +502,7 @@ creator_register_startup( void )
 
 static void fuse_show_copyright(void)
 {
+#ifndef BUILD_HERMITRETRO_ZXZERO
   printf( "\n" );
   fuse_show_version();
   printf(
@@ -491,6 +516,7 @@ static void fuse_show_copyright(void)
    "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
    "GNU General Public License for more details.\n\n");
+#endif
 }
 
 static void fuse_show_version( void )

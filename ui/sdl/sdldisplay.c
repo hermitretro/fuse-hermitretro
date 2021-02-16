@@ -554,6 +554,10 @@ sdl_blit_icon( SDL_Surface **icon,
 static void
 sdl_icon_overlay( Uint32 tmp_screen_pitch, Uint32 dstPitch )
 {
+#ifdef BUILD_HERMITRETRO_ZXZERO
+  return;
+#endif
+
   SDL_Rect r = { 243, 218, red_disk[0]->w, red_disk[0]->h };
 
   switch( sdl_disk_state ) {

@@ -71,6 +71,27 @@ fuse_SOURCES += \
                 peripherals/nic/w5100_socket.c
 endif
 
+if NEEDS_BCM2835
+fuse_SOURCES += \
+                peripherals/hermitretro/bcm2835.c \
+                peripherals/hermitretro/gpio_common.c
+endif
+
+if BUILD_HERMITRETRO_ZXZERO
+fuse_SOURCES += \
+                peripherals/hermitretro/hermitretro_zxzero.c
+endif
+
+if BUILD_GPIO_MEMBRANE
+fuse_SOURCES += \
+                peripherals/hermitretro/gpio_membrane.c
+endif
+
+if BUILD_GPIO_JOYSTICK
+fuse_SOURCES += \
+                peripherals/hermitretro/gpio_joystick.c
+endif
+
 noinst_HEADERS += \
                   peripherals/ay.h \
                   peripherals/covox.h \

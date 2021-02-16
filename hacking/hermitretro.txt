@@ -1,0 +1,38 @@
+Hermit Retro 
+============
+
+https://hermitretro.com
+
+The changes to support the Hermit Retro products are fairly lightweight.
+
+1) Don't print copyright to stdout when initialising
+2) Add new peripheral modules for the Hermit Retro ZXZero hardware under
+   peripherals/hermitretro.
+
+   These has been implemented as a potentially reusable "GPIO membrane" 
+   module, a "GPIO joystick" module, a "GPIO common" module and a high-level
+   ZXZero module (which handles the Fuse menu button).
+3) Don't render status info in SDL layer
+
+GPIO Membrane
+=============
+
+This module reads the 5-way and 8-way membrane connectors via dedicated GPIO
+pins and generates Fuse input events.
+
+GPIO Joystick
+=============
+
+This module reads dedicated GPIO pins corresponding to Atari joysticks and
+generates Fuse input events. The ZXZero module defaultly enables Kempston
+hardware and selects that as the default Joystick 0 mapping. The joystick
+type can be reassigned via the standard menus.
+
+Buildroot
+=========
+
+The Hermit Retro machines run Raspberry Pi OS packaged with Buildroot
+(https://buildroot.org) for fast startup times. Fuse and libspectrum have
+had --with-buildroot configure flags added to work around hardcoded
+filepath dependencies that break buildroot.
+

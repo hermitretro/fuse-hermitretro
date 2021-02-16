@@ -114,8 +114,10 @@ dnl Allow the user to say that various libraries are in one place
 AC_ARG_WITH(local-prefix,
 [  --with-local-prefix=PFX local libraries installed in PFX (optional)],
 CPPFLAGS="$CPPFLAGS -I$withval/include"; LDFLAGS="$LDFLAGS -L$withval/lib",
-if test "$prefix" != "NONE"; then
-  CPPFLAGS="$CPPFLAGS -I$prefix/include"; LDFLAGS="$LDFLAGS -L$prefix/lib"
+if test "x$buildroot" == xno; then
+  if test "$prefix" != "NONE"; then
+    CPPFLAGS="$CPPFLAGS -I$prefix/include"; LDFLAGS="$LDFLAGS -L$prefix/lib"
+  fi
 fi)
 
 dnl Check that libspectrum is available and that it is new enough
@@ -277,6 +279,75 @@ if test -z "$UI"; then
   fi
 fi
 
+dnl Are we building the GPIO membrane? (default=no)
+dnl Note: This will be overridden if we're building a Hermit Retro Spectrum
+dnl product
+AC_MSG_CHECKING(whether building GPIO membrane support)
+AC_ARG_WITH(gpio-membrane,
+[  --with-gpio-membrane building GPIO membrane],
+if test "$withval" = no; then
+  gpiomembrane=no
+else
+  gpiomembrane=yes
+  AC_DEFINE([BUILD_GPIO_MEMBRANE], 1, [Defined if building the GPIO membrane peripheral])
+  AC_DEFINE([NEEDS_BCM2835], 1, [Defined if building something using GPIO])
+  needsbcm2835=yes
+fi,
+gpiomembrane=no)
+AC_MSG_RESULT($gpiomembrane)
+
+dnl Are we building the GPIO joystick? (default=no)
+dnl Note: This will be overridden if we're building a Hermit Retro Spectrum
+dnl product
+AC_MSG_CHECKING(whether building GPIO joystick support)
+AC_ARG_WITH(gpio-joystick,
+[  --with-gpio-joystick building GPIO joystick],
+if test "$withval" = no; then
+  gpiojoystick=no
+else
+  gpiojoystick=yes
+  AC_DEFINE([BUILD_GPIO_JOYSTICK], 1, [Defined if building the GPIO joystick peripheral])
+  AC_DEFINE([NEEDS_BCM2835], 1, [Defined if building something using GPIO])
+  needsbcm2835=yes
+fi,
+gpiojoystick=no)
+AC_MSG_RESULT($gpiojoystick)
+
+dnl Are we building a Hermit Retro Spectrum ZXZero?
+AC_MSG_CHECKING(whether building for Hermit Retro ZXZero)
+AC_ARG_WITH(hermitretro-zxzero,
+[  --with-hermitretro-zxzero building for Hermit Retro ZXZero],
+if test "$withval" = no; then
+  hermitretrozxzero=no
+else
+  hermitretrozxzero=yes
+  CPPFLAGS="-DBUILD_HERMITRETRO_ZXZERO"
+  AC_DEFINE([BUILD_HERMITRETRO_ZXZERO], 1, [Defined if building for Hermit Retro ZXZero])
+  AC_DEFINE([BUILD_GPIO_MEMBRANE], 1, [Defined if building the GPIO membrane peripheral])
+  AC_DEFINE([BUILD_GPIO_JOYSTICK], 1, [Defined if building the GPIO joystick peripheral])
+  AC_DEFINE([NEEDS_BCM2835], 1, [Defined if building something using GPIO])
+  needsbcm2835=yes
+  gpiomembrane=yes
+  gpiojoystick=yes
+fi,
+hermitretrozxzero=no)
+AC_MSG_RESULT($hermitretrozxzero)
+
+dnl Are we building under buildroot? This has an effect on search paths for SDL
+dnl (default=no)
+AC_MSG_CHECKING(whether building under Buildroot)
+AC_ARG_WITH(buildroot,
+[  --with-buildroot        building under Buildroot],
+if test "$withval" = no; then
+  buildroot=no
+else
+  buildroot=yes
+  CPPFLAGS="-DBUILDROOT"
+  AC_DEFINE([BUILD_BUILDROOT], 1, [Defined if building under Buildroot])
+fi,
+buildroot=no)
+AC_MSG_RESULT($buildroot)
+
 dnl Look for SDL (default=no)
 if test -z "$UI"; then
   AC_MSG_CHECKING(whether SDL UI requested)
@@ -287,12 +358,22 @@ if test -z "$UI"; then
   AC_MSG_RESULT($sdl)
   if test "$sdl" = yes; then
     SDL_VERSION=1.2.4
-    AM_PATH_SDL($SDL_VERSION,
-		AC_DEFINE([UI_SDL], 1, [Defined if the SDL UI in use])
-		AC_DEFINE([USE_WIDGET], 1,
-		          [Defined if we're using a widget-based UI])
-		UI=sdl; WIDGET=widget,
+    if test "$buildroot" = yes; then
+      UI=sdl
+      WIDGET=widget
+      AC_DEFINE([UI_SDL], 1, [Defined if the SDL UI in use])
+      AC_DEFINE([USE_WIDGET], 1,
+            [Defined if we're using a widget-based UI])
+      SDL_CFLAGS="-I\${TARGET_DIR}/usr/include/SDL -D_GNU_SOURCE -D_REENTRANT"
+      SDL_LIBS="-L\${TARGET_DIR}/usr/lib -lSDL -lpthread"
+    else
+      AM_PATH_SDL($SDL_VERSION,
+      AC_DEFINE([UI_SDL], 1, [Defined if the SDL UI in use])
+      AC_DEFINE([USE_WIDGET], 1,
+            [Defined if we're using a widget-based UI])
+      UI=sdl; WIDGET=widget,
                 AC_MSG_ERROR([SDL version $SDL_VERSION not found]))
+    fi
   fi
 fi
 
@@ -411,6 +492,10 @@ fi
 
 AM_CONDITIONAL(UI_FB, test "$UI" = fb)
 AM_CONDITIONAL(UI_GTK, test "$UI" = gtk)
+AM_CONDITIONAL(BUILD_HERMITRETRO_ZXZERO, test "$hermitretrozxzero" = yes)
+AM_CONDITIONAL(BUILD_GPIO_MEMBRANE, test "$gpiomembrane" = yes)
+AM_CONDITIONAL(BUILD_GPIO_JOYSTICK, test "$gpiojoystick" = yes)
+AM_CONDITIONAL(NEEDS_BCM2835, test "$needsbcm2835" = yes)
 AM_CONDITIONAL(UI_NULL, test "$UI" = null)
 AM_CONDITIONAL(UI_SDL, test "$UI" = sdl)
 AM_CONDITIONAL(UI_SVGA, test "$UI" = svga)
