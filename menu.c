@@ -68,6 +68,12 @@ static int menu_select_machine_roms( libspectrum_machine machine, size_t start,
 static int menu_select_peripheral_roms( const char *peripheral_name,
 					size_t start, size_t n );
 
+#ifdef BUILD_HERMITRETRO_ZXZERO
+MENU_CALLBACK( menu_open ) {
+    menu_file_open( 0 );
+}
+#endif
+
 MENU_CALLBACK( menu_file_open )
 {
   char *filename;

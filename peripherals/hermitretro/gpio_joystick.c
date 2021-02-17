@@ -119,7 +119,8 @@ gpio_joystick_register_startup( void )
 {
   startup_manager_module dependencies[] = {
     STARTUP_MANAGER_MODULE_LIBSPECTRUM,
-    STARTUP_MANAGER_MODULE_SETUID
+    STARTUP_MANAGER_MODULE_SETUID,
+    STARTUP_MANAGER_MODULE_GPIO_COMMON
   };
   startup_manager_register( STARTUP_MANAGER_MODULE_GPIO_JOYSTICK, dependencies,
                             ARRAY_SIZE( dependencies ), gpio_joystick_init,

@@ -19,6 +19,7 @@
 
 # Philip Kendall <philip-fuse@shadowmagic.org.uk>
 
+#ifndef BUILD_HERMITRETRO_ZXZERO
 _File, Branch
 File/_Open..., Item, F3
 File/_Save Snapshot..., Item, F2
@@ -75,18 +76,26 @@ File/Save _binary data..., Item
 
 File/separator, Separator
 File/E_xit..., Item, F10
+#else
+# Hermit Retro ZXZero just has 'Open' instead of 'File'
+Open..., Item, F3
+#endif
 
 _Options, Branch
 Options/_General..., Item, F4
 Options/_Media..., Item
 Options/_Sound..., Item
 
+#ifndef BUILD_HERMITRETRO_ZXZERO
 Options/_Peripherals, Branch
 Options/Peripherals/_General..., Item
 Options/Peripherals/_Disk..., Item
+#endif
 
+#ifndef BUILD_HERMITRETRO_ZXZERO
 Options/_RZX..., Item
 Options/_Movie..., Item
+#endif
 
 Options/_Joysticks, Branch
 #ifdef USE_JOYSTICK
@@ -160,6 +169,7 @@ Machine/_NMI, Item
 Machine/Multiface Red _Button, Item
 Machine/Didaktik SNA_P, Item
 
+#ifndef BUILD_HERMITRETRO_ZXZERO
 M_edia, Branch
 
 Media/_Tape, Branch,,, menu_tape_detail
@@ -502,6 +512,7 @@ Media/IDE/_ZXMMC, Branch
 Media/IDE/ZXMMC/_Insert..., Item,, menu_media_ide_insert,, 9
 Media/IDE/ZXMMC/_Commit, Item,, menu_media_ide_commit,, 9
 Media/IDE/ZXMMC/_Eject, Item,, menu_media_ide_eject,, 9
+#endif
 
 _Help, Branch
 Help/_Keyboard..., Item

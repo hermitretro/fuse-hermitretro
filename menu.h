@@ -53,6 +53,9 @@
  * Things defined in menu.c
  */
 
+#ifdef BUILD_HERMITRETRO_ZXZERO
+MENU_CALLBACK( menu_open );
+#endif
 MENU_CALLBACK( menu_file_open );
 MENU_CALLBACK( menu_file_recording_continuerecording );
 MENU_CALLBACK( menu_file_recording_insertsnapshot );

@@ -166,7 +166,8 @@ gpio_membrane_register_startup( void )
 {
   startup_manager_module dependencies[] = {
     STARTUP_MANAGER_MODULE_LIBSPECTRUM,
-    STARTUP_MANAGER_MODULE_SETUID
+    STARTUP_MANAGER_MODULE_SETUID,
+    STARTUP_MANAGER_MODULE_GPIO_COMMON
   };
   startup_manager_register( STARTUP_MANAGER_MODULE_GPIO_MEMBRANE, dependencies,
                             ARRAY_SIZE( dependencies ), gpio_membrane_init,

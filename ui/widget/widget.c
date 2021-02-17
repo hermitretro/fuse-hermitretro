@@ -784,26 +784,31 @@ ui_popup_menu( int native_key )
     widget_do_menu( widget_menu );
     fuse_emulation_unpause();
     break;
+#ifndef BUILD_HERMITRETRO_ZXZERO
   case INPUT_KEY_F2:
     fuse_emulation_pause();
     menu_file_savesnapshot( 0 );
     fuse_emulation_unpause();
     break;
+#endif
   case INPUT_KEY_F3:
     fuse_emulation_pause();
     menu_file_open( 0 );
     fuse_emulation_unpause();
     break;
+#ifndef BUILD_HERMITRETRO_ZXZERO
   case INPUT_KEY_F4:
     fuse_emulation_pause();
     menu_options_general( 0 );
     fuse_emulation_unpause();
     break;
+#endif
   case INPUT_KEY_F5:
     fuse_emulation_pause();
     menu_machine_reset( 0 );
     fuse_emulation_unpause();
     break;
+#ifndef BUILD_HERMITRETRO_ZXZERO
   case INPUT_KEY_F6:
     fuse_emulation_pause();
     menu_media_tape_write( 0 );
@@ -817,6 +822,7 @@ ui_popup_menu( int native_key )
   case INPUT_KEY_F8:
     menu_media_tape_play( 0 );
     break;
+#endif
   case INPUT_KEY_F9:
     fuse_emulation_pause();
     menu_machine_select( 0 );
