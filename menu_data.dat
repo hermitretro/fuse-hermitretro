@@ -77,22 +77,20 @@ File/Save _binary data..., Item
 File/separator, Separator
 File/E_xit..., Item, F10
 #else
-# Hermit Retro ZXZero just has 'Open' instead of 'File'
-Open..., Item, F3
+# Hermit Retro ZXZero replacement for 'File' menu
+_Open, Item, F1
 #endif
 
 _Options, Branch
+#ifndef BUILD_HERMITRETRO_ZXZERO
 Options/_General..., Item, F4
 Options/_Media..., Item
 Options/_Sound..., Item
 
-#ifndef BUILD_HERMITRETRO_ZXZERO
 Options/_Peripherals, Branch
 Options/Peripherals/_General..., Item
 Options/Peripherals/_Disk..., Item
-#endif
 
-#ifndef BUILD_HERMITRETRO_ZXZERO
 Options/_RZX..., Item
 Options/_Movie..., Item
 #endif
@@ -104,6 +102,7 @@ Options/Joysticks/Joystick _2..., Item,, menu_options_joysticks_select, menu_joy
 #endif
 Options/Joysticks/_Keyboard..., Item,, menu_options_joysticks_select, menu_keyboard_joystick_detail, 3
 
+#ifndef BUILD_HERMITRETRO_ZXZERO
 Options/S_elect ROMs, Branch
 
 Options/Select ROMs/_Machine ROMs, Branch
@@ -146,6 +145,7 @@ Options/_Disk options..., Item
 
 Options/separator, Separator
 Options/S_ave, Item
+#endif
 
 _Machine, Branch
 
@@ -156,6 +156,7 @@ Machine/_Pause..., Item, Pause
 Machine/_Reset..., Item, F5,,, 0
 Machine/_Hard reset..., Item,, menu_machine_reset,, 1
 Machine/_Select..., Item, F9,, menu_machine_detail
+#ifndef BUILD_HERMITRETRO_ZXZERO
 Machine/_Debugger..., Item
 Machine/P_oke Finder..., Item
 Machine/Po_ke Memory..., Item
@@ -168,6 +169,7 @@ Machine/Profiler/_Stop, Item
 Machine/_NMI, Item
 Machine/Multiface Red _Button, Item
 Machine/Didaktik SNA_P, Item
+#endif
 
 #ifndef BUILD_HERMITRETRO_ZXZERO
 M_edia, Branch

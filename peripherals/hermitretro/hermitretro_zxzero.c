@@ -68,6 +68,12 @@ hermitretro_zxzero_init( void *context )
   /** Default to having a Kempston joystick available and the default choice */
   settings_current.joy_kempston = 1;
   settings_current.joystick_1_output = JOYSTICK_TYPE_KEMPSTON;
+  
+  /** Disable the status bar */
+  settings_current.statusbar = 0;
+
+  /** Ensure full-screen as we don't want the SDL cursor */
+  settings_current.full_screen = 1;
 
   return rv;
 }

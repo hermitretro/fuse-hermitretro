@@ -554,7 +554,7 @@ sdl_blit_icon( SDL_Surface **icon,
 static void
 sdl_icon_overlay( Uint32 tmp_screen_pitch, Uint32 dstPitch )
 {
-#ifdef BUILD_HERMITRETRO_ZXZERO
+#ifdef BUILD_HERMITRETRO_ZXZERO2
   return;
 #endif
 

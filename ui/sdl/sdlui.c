@@ -141,10 +141,10 @@ ui_event( void )
   }
 
   /**
-   * I'm not convinced this should be here but without it the GPIO
+   * [AD: I'm not convinced this should be here but without it the GPIO
    * membrane won't work in widget mode. Only run this in widget mode
    * here since the real polling is done in spectrum.c and we don't
-   * want to waste resource doing this twice
+   * want to waste resource doing this twice]
    */
 #ifdef BUILD_HERMITRETRO_ZXZERO
   if ( ui_widget_level > -1 ) {

@@ -6,6 +6,18 @@
 /* Defined if we can increase Blip Buffer accuracy */
 #undef BLIP_BUFFER_ACCURACY
 
+/* Defined if building under Buildroot */
+#undef BUILD_BUILDROOT
+
+/* Defined if building the GPIO joystick peripheral */
+#undef BUILD_GPIO_JOYSTICK
+
+/* Defined if building the GPIO membrane peripheral */
+#undef BUILD_GPIO_MEMBRANE
+
+/* Defined if building for Hermit Retro ZXZero */
+#undef BUILD_HERMITRETRO_ZXZERO
+
 /* Define to 1 if SpeccyBoot is supported. */
 #undef BUILD_SPECCYBOOT
 
@@ -114,6 +126,9 @@
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
 #undef LT_OBJDIR
+
+/* Defined if building something using GPIO */
+#undef NEEDS_BCM2835
 
 /* Defined if no sound code is present */
 #undef NO_SOUND

@@ -699,6 +699,14 @@ UI_SDL_FALSE
 UI_SDL_TRUE
 UI_NULL_FALSE
 UI_NULL_TRUE
+NEEDS_BCM2835_FALSE
+NEEDS_BCM2835_TRUE
+BUILD_GPIO_JOYSTICK_FALSE
+BUILD_GPIO_JOYSTICK_TRUE
+BUILD_GPIO_MEMBRANE_FALSE
+BUILD_GPIO_MEMBRANE_TRUE
+BUILD_HERMITRETRO_ZXZERO_FALSE
+BUILD_HERMITRETRO_ZXZERO_TRUE
 UI_GTK_FALSE
 UI_GTK_TRUE
 UI_FB_FALSE
@@ -762,7 +770,6 @@ am__nodep
 AMDEPBACKSLASH
 AMDEP_FALSE
 AMDEP_TRUE
-am__quote
 am__include
 DEPDIR
 OBJEXT
@@ -829,6 +836,7 @@ infodir
 docdir
 oldincludedir
 includedir
+runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -847,7 +855,8 @@ PACKAGE_VERSION
 PACKAGE_TARNAME
 PACKAGE_NAME
 PATH_SEPARATOR
-SHELL'
+SHELL
+am__quote'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
@@ -867,6 +876,10 @@ with_svgalib
 with_fb
 with_gpm
 with_wii
+with_gpio_membrane
+with_gpio_joystick
+with_hermitretro_zxzero
+with_buildroot
 with_sdl
 with_sdl_prefix
 with_sdl_exec_prefix
@@ -955,6 +968,7 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
+runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
@@ -1207,6 +1221,15 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
+  -runstatedir | --runstatedir | --runstatedi | --runstated \
+  | --runstate | --runstat | --runsta | --runst | --runs \
+  | --run | --ru | --r)
+    ac_prev=runstatedir ;;
+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
+  | --run=* | --ru=* | --r=*)
+    runstatedir=$ac_optarg ;;
+
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1344,7 +1367,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir
+		libdir localedir mandir runstatedir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1497,6 +1520,7 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -1575,6 +1599,10 @@ Optional Packages:
   --with-fb               use framebuffer for user interface
   --without-gpm           don't use libgpm for e.g. Kempston mouse
   --with-wii               use Wii FB for user interface
+  --with-gpio-membrane building GPIO membrane
+  --with-gpio-joystick building GPIO joystick
+  --with-hermitretro-zxzero building for Hermit Retro ZXZero
+  --with-buildroot        building under Buildroot
   --with-sdl              use SDL for user interface
   --with-sdl-prefix=PFX   Prefix where SDL is installed (optional)
   --with-sdl-exec-prefix=PFX Exec prefix where SDL is installed (optional)
@@ -2701,7 +2729,7 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
 
-am__api_version='1.14'
+am__api_version='1.16'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -2893,7 +2921,7 @@ else
 $as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh}" != xset; then
+if test x"${install_sh+set}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
     install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
@@ -3217,12 +3245,12 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 
 # For better backward compatibility.  To be removed once Automake 1.9.x
 # dies out for good.  For more background, see:
-# <http://lists.gnu.org/archive/html/automake/2012-07/msg00001.html>
-# <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
+# <https://lists.gnu.org/archive/html/automake/2012-07/msg00001.html>
+# <https://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
 mkdir_p='$(MKDIR_P)'
 
-# We need awk for the "check" target.  The system "awk" is bad on
-# some platforms.
+# We need awk for the "check" target (and possibly the TAP driver).  The
+# system "awk" is bad on some platforms.
 # Always define AMTAR for backward compatibility.  Yes, it's still used
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
@@ -3269,7 +3297,7 @@ END
 Aborting the configuration process, to ensure you take notice of the issue.
 
 You can download and install GNU coreutils to get an 'rm' implementation
-that behaves properly: <http://www.gnu.org/software/coreutils/>.
+that behaves properly: <https://www.gnu.org/software/coreutils/>.
 
 If you want to complete the configuration process using your problematic
 'rm' anyway, export the environment variable ACCEPT_INFERIOR_RM_PROGRAM
@@ -4185,45 +4213,45 @@ DEPDIR="${am__leading_dot}deps"
 
 ac_config_commands="$ac_config_commands depfiles"
 
-
-am_make=${MAKE-make}
-cat > confinc << 'END'
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} supports the include directive" >&5
+$as_echo_n "checking whether ${MAKE-make} supports the include directive... " >&6; }
+cat > confinc.mk << 'END'
 am__doit:
-	@echo this is the am__doit target
+	@echo this is the am__doit target >confinc.out
 .PHONY: am__doit
 END
-# If we don't find an include directive, just comment out the code.
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for style of include used by $am_make" >&5
-$as_echo_n "checking for style of include used by $am_make... " >&6; }
 am__include="#"
 am__quote=
-_am_result=none
-# First try GNU make style include.
-echo "include confinc" > confmf
-# Ignore all kinds of additional output from 'make'.
-case `$am_make -s -f confmf 2> /dev/null` in #(
-*the\ am__doit\ target*)
-  am__include=include
-  am__quote=
-  _am_result=GNU
-  ;;
-esac
-# Now try BSD make style include.
-if test "$am__include" = "#"; then
-   echo '.include "confinc"' > confmf
-   case `$am_make -s -f confmf 2> /dev/null` in #(
-   *the\ am__doit\ target*)
-     am__include=.include
-     am__quote="\""
-     _am_result=BSD
+# BSD make does it like this.
+echo '.include "confinc.mk" # ignored' > confmf.BSD
+# Other make implementations (GNU, Solaris 10, AIX) do it like this.
+echo 'include confinc.mk # ignored' > confmf.GNU
+_am_result=no
+for s in GNU BSD; do
+  { echo "$as_me:$LINENO: ${MAKE-make} -f confmf.$s && cat confinc.out" >&5
+   (${MAKE-make} -f confmf.$s && cat confinc.out) >&5 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); }
+  case $?:`cat confinc.out 2>/dev/null` in #(
+  '0:this is the am__doit target') :
+    case $s in #(
+  BSD) :
+    am__include='.include' am__quote='"' ;; #(
+  *) :
+    am__include='include' am__quote='' ;;
+esac ;; #(
+  *) :
      ;;
-   esac
-fi
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $_am_result" >&5
-$as_echo "$_am_result" >&6; }
-rm -f confinc confmf
+esac
+  if test "$am__include" != "#"; then
+    _am_result="yes ($s style)"
+    break
+  fi
+done
+rm -f confinc.* confmf.*
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${_am_result}" >&5
+$as_echo "${_am_result}" >&6; }
 
 # Check whether --enable-dependency-tracking was given.
 if test "${enable_dependency_tracking+set}" = set; then :
@@ -12961,8 +12989,10 @@ fi
 if test "${with_local_prefix+set}" = set; then :
   withval=$with_local_prefix; CPPFLAGS="$CPPFLAGS -I$withval/include"; LDFLAGS="$LDFLAGS -L$withval/lib"
 else
+  if test "x$buildroot" == xno; then
   if test "$prefix" != "NONE"; then
-  CPPFLAGS="$CPPFLAGS -I$prefix/include"; LDFLAGS="$LDFLAGS -L$prefix/lib"
+    CPPFLAGS="$CPPFLAGS -I$prefix/include"; LDFLAGS="$LDFLAGS -L$prefix/lib"
+  fi
 fi
 fi
 
@@ -14174,6 +14204,108 @@ fi
   fi
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether building GPIO membrane support" >&5
+$as_echo_n "checking whether building GPIO membrane support... " >&6; }
+
+# Check whether --with-gpio-membrane was given.
+if test "${with_gpio_membrane+set}" = set; then :
+  withval=$with_gpio_membrane; if test "$withval" = no; then
+  gpiomembrane=no
+else
+  gpiomembrane=yes
+
+$as_echo "#define BUILD_GPIO_MEMBRANE 1" >>confdefs.h
+
+
+$as_echo "#define NEEDS_BCM2835 1" >>confdefs.h
+
+  needsbcm2835=yes
+fi
+else
+  gpiomembrane=no
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gpiomembrane" >&5
+$as_echo "$gpiomembrane" >&6; }
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether building GPIO joystick support" >&5
+$as_echo_n "checking whether building GPIO joystick support... " >&6; }
+
+# Check whether --with-gpio-joystick was given.
+if test "${with_gpio_joystick+set}" = set; then :
+  withval=$with_gpio_joystick; if test "$withval" = no; then
+  gpiojoystick=no
+else
+  gpiojoystick=yes
+
+$as_echo "#define BUILD_GPIO_JOYSTICK 1" >>confdefs.h
+
+
+$as_echo "#define NEEDS_BCM2835 1" >>confdefs.h
+
+  needsbcm2835=yes
+fi
+else
+  gpiojoystick=no
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gpiojoystick" >&5
+$as_echo "$gpiojoystick" >&6; }
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether building for Hermit Retro ZXZero" >&5
+$as_echo_n "checking whether building for Hermit Retro ZXZero... " >&6; }
+
+# Check whether --with-hermitretro-zxzero was given.
+if test "${with_hermitretro_zxzero+set}" = set; then :
+  withval=$with_hermitretro_zxzero; if test "$withval" = no; then
+  hermitretrozxzero=no
+else
+  hermitretrozxzero=yes
+  CPPFLAGS="-DBUILD_HERMITRETRO_ZXZERO"
+
+$as_echo "#define BUILD_HERMITRETRO_ZXZERO 1" >>confdefs.h
+
+
+$as_echo "#define BUILD_GPIO_MEMBRANE 1" >>confdefs.h
+
+
+$as_echo "#define BUILD_GPIO_JOYSTICK 1" >>confdefs.h
+
+
+$as_echo "#define NEEDS_BCM2835 1" >>confdefs.h
+
+  needsbcm2835=yes
+  gpiomembrane=yes
+  gpiojoystick=yes
+fi
+else
+  hermitretrozxzero=no
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $hermitretrozxzero" >&5
+$as_echo "$hermitretrozxzero" >&6; }
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether building under Buildroot" >&5
+$as_echo_n "checking whether building under Buildroot... " >&6; }
+
+# Check whether --with-buildroot was given.
+if test "${with_buildroot+set}" = set; then :
+  withval=$with_buildroot; if test "$withval" = no; then
+  buildroot=no
+else
+  buildroot=yes
+  CPPFLAGS="-DBUILDROOT"
+
+$as_echo "#define BUILD_BUILDROOT 1" >>confdefs.h
+
+fi
+else
+  buildroot=no
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $buildroot" >&5
+$as_echo "$buildroot" >&6; }
+
 if test -z "$UI"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether SDL UI requested" >&5
 $as_echo_n "checking whether SDL UI requested... " >&6; }
@@ -14189,6 +14321,18 @@ fi
 $as_echo "$sdl" >&6; }
   if test "$sdl" = yes; then
     SDL_VERSION=1.2.4
+    if test "$buildroot" = yes; then
+      UI=sdl
+      WIDGET=widget
+
+$as_echo "#define UI_SDL 1" >>confdefs.h
+
+
+$as_echo "#define USE_WIDGET 1" >>confdefs.h
+
+      SDL_CFLAGS="-I\${TARGET_DIR}/usr/include/SDL -D_GNU_SOURCE -D_REENTRANT"
+      SDL_LIBS="-L\${TARGET_DIR}/usr/lib -lSDL -lpthread"
+    else
 
 # Check whether --with-sdl-prefix was given.
 if test "${with_sdl_prefix+set}" = set; then :
@@ -14377,7 +14521,7 @@ $as_echo "#define UI_SDL 1" >>confdefs.h
 
 $as_echo "#define USE_WIDGET 1" >>confdefs.h
 
-		UI=sdl; WIDGET=widget
+      UI=sdl; WIDGET=widget
   else
      { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
@@ -14442,6 +14586,7 @@ rm -f core conftest.err conftest.$ac_objext \
 
   rm -f conf.sdltest
 
+    fi
   fi
 fi
 
@@ -16362,6 +16507,38 @@ fi
 else
   UI_GTK_TRUE='#'
   UI_GTK_FALSE=
+fi
+
+ if test "$hermitretrozxzero" = yes; then
+  BUILD_HERMITRETRO_ZXZERO_TRUE=
+  BUILD_HERMITRETRO_ZXZERO_FALSE='#'
+else
+  BUILD_HERMITRETRO_ZXZERO_TRUE='#'
+  BUILD_HERMITRETRO_ZXZERO_FALSE=
+fi
+
+ if test "$gpiomembrane" = yes; then
+  BUILD_GPIO_MEMBRANE_TRUE=
+  BUILD_GPIO_MEMBRANE_FALSE='#'
+else
+  BUILD_GPIO_MEMBRANE_TRUE='#'
+  BUILD_GPIO_MEMBRANE_FALSE=
+fi
+
+ if test "$gpiojoystick" = yes; then
+  BUILD_GPIO_JOYSTICK_TRUE=
+  BUILD_GPIO_JOYSTICK_FALSE='#'
+else
+  BUILD_GPIO_JOYSTICK_TRUE='#'
+  BUILD_GPIO_JOYSTICK_FALSE=
+fi
+
+ if test "$needsbcm2835" = yes; then
+  NEEDS_BCM2835_TRUE=
+  NEEDS_BCM2835_FALSE='#'
+else
+  NEEDS_BCM2835_TRUE='#'
+  NEEDS_BCM2835_FALSE=
 fi
 
  if test "$UI" = null; then
@@ -18428,6 +18605,22 @@ if test -z "${UI_GTK_TRUE}" && test -z "${UI_GTK_FALSE}"; then
   as_fn_error $? "conditional \"UI_GTK\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
+if test -z "${BUILD_HERMITRETRO_ZXZERO_TRUE}" && test -z "${BUILD_HERMITRETRO_ZXZERO_FALSE}"; then
+  as_fn_error $? "conditional \"BUILD_HERMITRETRO_ZXZERO\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_GPIO_MEMBRANE_TRUE}" && test -z "${BUILD_GPIO_MEMBRANE_FALSE}"; then
+  as_fn_error $? "conditional \"BUILD_GPIO_MEMBRANE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_GPIO_JOYSTICK_TRUE}" && test -z "${BUILD_GPIO_JOYSTICK_FALSE}"; then
+  as_fn_error $? "conditional \"BUILD_GPIO_JOYSTICK\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${NEEDS_BCM2835_TRUE}" && test -z "${NEEDS_BCM2835_FALSE}"; then
+  as_fn_error $? "conditional \"NEEDS_BCM2835\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${UI_NULL_TRUE}" && test -z "${UI_NULL_FALSE}"; then
   as_fn_error $? "conditional \"UI_NULL\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -19099,7 +19292,7 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 #
 # INIT-COMMANDS
 #
-AMDEP_TRUE="$AMDEP_TRUE" ac_aux_dir="$ac_aux_dir"
+AMDEP_TRUE="$AMDEP_TRUE" MAKE="${MAKE-make}"
 
 
 # The HP-UX ksh and POSIX shell print the target directory to stdout
@@ -19991,29 +20184,35 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
   # Older Autoconf quotes --file arguments for eval, but not when files
   # are listed without --file.  Let's play safe and only enable the eval
   # if we detect the quoting.
-  case $CONFIG_FILES in
-  *\'*) eval set x "$CONFIG_FILES" ;;
-  *)   set x $CONFIG_FILES ;;
-  esac
+  # TODO: see whether this extra hack can be removed once we start
+  # requiring Autoconf 2.70 or later.
+  case $CONFIG_FILES in #(
+  *\'*) :
+    eval set x "$CONFIG_FILES" ;; #(
+  *) :
+    set x $CONFIG_FILES ;; #(
+  *) :
+     ;;
+esac
   shift
-  for mf
+  # Used to flag and report bootstrapping failures.
+  am_rc=0
+  for am_mf
   do
     # Strip MF so we end up with the name of the file.
-    mf=`echo "$mf" | sed -e 's/:.*$//'`
-    # Check whether this is an Automake generated Makefile or not.
-    # We used to match only the files named 'Makefile.in', but
-    # some people rename them; so instead we look at the file content.
-    # Grep'ing the first line is not enough: some people post-process
-    # each Makefile.in and add a new line on top of each file to say so.
-    # Grep'ing the whole file is not good either: AIX grep has a line
+    am_mf=`$as_echo "$am_mf" | sed -e 's/:.*$//'`
+    # Check whether this is an Automake generated Makefile which includes
+    # dependency-tracking related rules and includes.
+    # Grep'ing the whole file directly is not great: AIX grep has a line
     # limit of 2048, but all sed's we know have understand at least 4000.
-    if sed -n 's,^#.*generated by automake.*,X,p' "$mf" | grep X >/dev/null 2>&1; then
-      dirpart=`$as_dirname -- "$mf" ||
-$as_expr X"$mf" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
-	 X"$mf" : 'X\(//\)[^/]' \| \
-	 X"$mf" : 'X\(//\)$' \| \
-	 X"$mf" : 'X\(/\)' \| . 2>/dev/null ||
-$as_echo X"$mf" |
+    sed -n 's,^am--depfiles:.*,X,p' "$am_mf" | grep X >/dev/null 2>&1 \
+      || continue
+    am_dirpart=`$as_dirname -- "$am_mf" ||
+$as_expr X"$am_mf" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
+	 X"$am_mf" : 'X\(//\)[^/]' \| \
+	 X"$am_mf" : 'X\(//\)$' \| \
+	 X"$am_mf" : 'X\(/\)' \| . 2>/dev/null ||
+$as_echo X"$am_mf" |
     sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{
 	    s//\1/
 	    q
@@ -20031,53 +20230,48 @@ $as_echo X"$mf" |
 	    q
 	  }
 	  s/.*/./; q'`
-    else
-      continue
-    fi
-    # Extract the definition of DEPDIR, am__include, and am__quote
-    # from the Makefile without running 'make'.
-    DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
-    test -z "$DEPDIR" && continue
-    am__include=`sed -n 's/^am__include = //p' < "$mf"`
-    test -z "$am__include" && continue
-    am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
-    # Find all dependency output files, they are included files with
-    # $(DEPDIR) in their names.  We invoke sed twice because it is the
-    # simplest approach to changing $(DEPDIR) to its actual value in the
-    # expansion.
-    for file in `sed -n "
-      s/^$am__include $am__quote\(.*(DEPDIR).*\)$am__quote"'$/\1/p' <"$mf" | \
-	 sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g'`; do
-      # Make sure the directory exists.
-      test -f "$dirpart/$file" && continue
-      fdir=`$as_dirname -- "$file" ||
-$as_expr X"$file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
-	 X"$file" : 'X\(//\)[^/]' \| \
-	 X"$file" : 'X\(//\)$' \| \
-	 X"$file" : 'X\(/\)' \| . 2>/dev/null ||
-$as_echo X"$file" |
-    sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{
+    am_filepart=`$as_basename -- "$am_mf" ||
+$as_expr X/"$am_mf" : '.*/\([^/][^/]*\)/*$' \| \
+	 X"$am_mf" : 'X\(//\)$' \| \
+	 X"$am_mf" : 'X\(/\)' \| . 2>/dev/null ||
+$as_echo X/"$am_mf" |
+    sed '/^.*\/\([^/][^/]*\)\/*$/{
 	    s//\1/
 	    q
 	  }
-	  /^X\(\/\/\)[^/].*/{
+	  /^X\/\(\/\/\)$/{
 	    s//\1/
 	    q
 	  }
-	  /^X\(\/\/\)$/{
-	    s//\1/
-	    q
-	  }
-	  /^X\(\/\).*/{
+	  /^X\/\(\/\).*/{
 	    s//\1/
 	    q
 	  }
 	  s/.*/./; q'`
-      as_dir=$dirpart/$fdir; as_fn_mkdir_p
-      # echo "creating $dirpart/$file"
-      echo '# dummy' > "$dirpart/$file"
-    done
+    { echo "$as_me:$LINENO: cd "$am_dirpart" \
+      && sed -e '/# am--include-marker/d' "$am_filepart" \
+        | $MAKE -f - am--depfiles" >&5
+   (cd "$am_dirpart" \
+      && sed -e '/# am--include-marker/d' "$am_filepart" \
+        | $MAKE -f - am--depfiles) >&5 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); } || am_rc=$?
   done
+  if test $am_rc -ne 0; then
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Something went wrong bootstrapping makefile fragments
+    for automatic dependency tracking.  Try re-running configure with the
+    '--disable-dependency-tracking' option to at least be able to build
+    the package (albeit without support for automatic dependency tracking).
+See \`config.log' for more details" "$LINENO" 5; }
+  fi
+  { am_dirpart=; unset am_dirpart;}
+  { am_filepart=; unset am_filepart;}
+  { am_mf=; unset am_mf;}
+  { am_rc=; unset am_rc;}
+  rm -f conftest-deps.mk
 }
  ;;
     "libtool":C)

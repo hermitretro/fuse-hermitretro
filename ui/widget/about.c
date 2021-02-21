@@ -28,17 +28,26 @@
 #include "widget.h"
 #include "widget_internals.h"
 
+#ifdef BUILD_HERMITRETRO_ZXZERO
+#include "peripherals/hermitretro/hermitretro_zxzero.h"
+#endif
+
 int
 widget_about_draw( void *data GCC_UNUSED )
 {
   char buffer[80];
-  int dialog_cols, string_width, margin, x, line;
+  int dialog_cols, dialog_rows, string_width, margin, x, line;
 
   dialog_cols = 30;
+  dialog_rows = 7 + 2;
   margin = 17;
   line = 0;
 
-  widget_dialog_with_border( 1, 2, dialog_cols, 7+2 );
+#ifdef BUILD_HERMITRETRO_ZXZERO
+  dialog_rows += 4;
+#endif
+
+  widget_dialog_with_border( 1, 2, dialog_cols, dialog_rows );
   widget_printstring( 10, 16, WIDGET_COLOUR_TITLE, "About Fuse" );
 
   string_width = widget_stringwidth( "the Free Unix Spectrum Emulator (Fuse)" );
@@ -63,6 +72,23 @@ widget_about_draw( void *data GCC_UNUSED )
   string_width = widget_stringwidth( PACKAGE_URL );
   x = margin - 8 + ( dialog_cols * 8 - string_width ) / 2;
   widget_printstring( x, ++line * 8 + 24, 0x09, PACKAGE_URL );
+
+#ifdef BUILD_HERMITRETRO_ZXZERO
+  ++line;
+
+  string_width = widget_stringwidth( "Hermit Retro ZXZero" );
+  x = margin - 8 + ( dialog_cols * 8 - string_width ) / 2;
+  widget_printstring( x, ++line * 8 + 24, WIDGET_COLOUR_FOREGROUND, "Hermit Retro ZXZero" );
+
+  snprintf( buffer, 80, "Version %s", HERMITRETRO_ZXZERO_VERSION );
+  string_width = widget_stringwidth( buffer );
+  x = margin - 8 + ( dialog_cols * 8 - string_width ) / 2;
+  widget_printstring( x, ++line * 8 + 24, WIDGET_COLOUR_FOREGROUND, buffer );
+
+  string_width = widget_stringwidth( HERMITRETRO_ZXZERO_URL );
+  x = margin - 8 + ( dialog_cols * 8 - string_width ) / 2;
+  widget_printstring( x, ++line * 8 + 24, 0x09, HERMITRETRO_ZXZERO_URL );
+#endif
 
   widget_display_lines( 2, line + 3 );
 
