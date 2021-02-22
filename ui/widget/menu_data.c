@@ -51,6 +51,9 @@ static widget_menu_entry menu_machine[] = {
   { "\012R\011eset...", INPUT_KEY_r, NULL, menu_machine_reset, NULL, 0 },
   { "\012H\011ard reset...", INPUT_KEY_h, NULL, menu_machine_reset, NULL, 1 },
   { "\012S\011elect...", INPUT_KEY_s, NULL, menu_machine_select, menu_machine_detail, 0 },
+  { "P\012o\011ke Finder...", INPUT_KEY_o, NULL, menu_machine_pokefinder, NULL, 0 },
+  { "Po\012k\011e Memory...", INPUT_KEY_k, NULL, menu_machine_pokememory, NULL, 0 },
+  { "\012M\011emory Browser...", INPUT_KEY_m, NULL, menu_machine_memorybrowser, NULL, 0 },
   { NULL }
 };
 
