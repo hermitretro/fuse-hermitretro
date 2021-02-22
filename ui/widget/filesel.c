@@ -405,10 +405,15 @@ static void widget_scan( char *dir )
 
   size_t i; int error;
   
-  /* Free the memory belonging to the files in the previous directory */
-  for( i=0; i<widget_numfiles; i++ ) {
-    free( widget_filenames[i]->name );
-    free( widget_filenames[i] );
+  /*
+   * Free the memory belonging to the files in the previous directory 
+   * after checking the previous directory scan didn't fail..
+   */
+  if ( widget_numfiles != (size_t)-1 ) {
+    for( i=0; i<widget_numfiles; i++ ) {
+      free( widget_filenames[i]->name );
+      free( widget_filenames[i] );
+    }
   }
 
 #ifdef WIN32
