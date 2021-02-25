@@ -43,6 +43,7 @@ static widget_menu_entry menu_options_joysticks[] = {
 static widget_menu_entry menu_options[] = {
   { "Options" },
   { "\012J\011oysticks", INPUT_KEY_j, menu_options_joysticks, NULL, NULL, 0 },
+  { "\012F\011ilter...", INPUT_KEY_f, NULL, menu_options_filter, menu_filter_detail, 0 },
   { NULL }
 };
 

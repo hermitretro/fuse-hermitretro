@@ -35,7 +35,9 @@
 #include "peripherals/joystick.h"
 #include "keyboard.h"
 #include "module.h"
+#include "ui/scaler/scaler.h"
 #include "settings.h"
+#include "utils.h"
 
 #ifdef BUILD_HERMITRETRO_ZXZERO
 
@@ -61,6 +63,9 @@ static module_info_t hermitretro_zxzero_module_info = {
 int
 hermitretro_zxzero_init( void *context )
 {
+  int error;
+  char *start_scaler;
+
   int rv = _hermitretro_zxzero_init();
 
   module_register( &hermitretro_zxzero_module_info );
@@ -74,6 +79,14 @@ hermitretro_zxzero_init( void *context )
 
   /** Ensure full-screen as we don't want the SDL cursor */
   settings_current.full_screen = 1;
+
+  /** Default to 2x (double-size) scaler as opposed to normal */
+  /** Normal tends to smooth a bit */
+  /** This code is just lifted from fuse.c */
+  start_scaler = utils_safe_strdup( "2x" );
+
+  error = scaler_select_id( start_scaler ); libspectrum_free( start_scaler );
+  if( error ) return error;
 
   return rv;
 }
