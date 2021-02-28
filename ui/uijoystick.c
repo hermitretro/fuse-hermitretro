@@ -215,7 +215,7 @@ poll_joystick( int which )
   event.types.joystick.which = which;
 
   buttons = joystick->total_buttons;
-  if( buttons > NUM_JOY_BUTTONS ) buttons = NUM_JOY_BUTTONS;	/* We support 'only' NUM_JOY_BUTTONS (15 as defined in ui/uijoystick.h) fire buttons */
+  if( buttons > NUM_JOY_BUTTONS ) buttons = NUM_JOY_BUTTONS;	/* We support 'only' NUM_JOY_BUTTONS (17 as defined in ui/uijoystick.h) fire buttons */
 
   for( i = 0; i < buttons; i++ ) {
 

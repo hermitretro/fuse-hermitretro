@@ -97,6 +97,8 @@ typedef struct settings_info {
    int joystick_1_fire_13;
    int joystick_1_fire_14;
    int joystick_1_fire_15;
+   int joystick_1_fire_16;
+   int joystick_1_fire_17;
    int joystick_1_fire_2;
    int joystick_1_fire_3;
    int joystick_1_fire_4;
@@ -114,6 +116,8 @@ typedef struct settings_info {
    int joystick_2_fire_13;
    int joystick_2_fire_14;
    int joystick_2_fire_15;
+   int joystick_2_fire_16;
+   int joystick_2_fire_17;
    int joystick_2_fire_2;
    int joystick_2_fire_3;
    int joystick_2_fire_4;

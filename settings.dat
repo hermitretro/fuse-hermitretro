@@ -119,6 +119,8 @@ joystick_1_fire_12, numeric, 4096
 joystick_1_fire_13, numeric, 4096
 joystick_1_fire_14, numeric, 4096
 joystick_1_fire_15, numeric, 4096
+joystick_1_fire_16, numeric, 4096
+joystick_1_fire_17, numeric, 4096
 joystick_2, string, NULL
 joystick_2_output, numeric, 0
 joystick_2_fire_1, numeric, 4096
@@ -136,6 +138,8 @@ joystick_2_fire_12, numeric, 4096
 joystick_2_fire_13, numeric, 4096
 joystick_2_fire_14, numeric, 4096
 joystick_2_fire_15, numeric, 4096
+joystick_2_fire_16, numeric, 4096
+joystick_2_fire_17, numeric, 4096
 joystick_keyboard_output, numeric, 0
 joystick_keyboard_up, numeric, 113
 joystick_keyboard_down, numeric, 97

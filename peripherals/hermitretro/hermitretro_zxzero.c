@@ -101,7 +101,8 @@ hermitretro_zxzero_register_startup( void )
 {
   startup_manager_module dependencies[] = {
     STARTUP_MANAGER_MODULE_LIBSPECTRUM,
-    STARTUP_MANAGER_MODULE_SETUID
+    STARTUP_MANAGER_MODULE_SETUID,
+    STARTUP_MANAGER_MODULE_GPIO_COMMON
   };
   startup_manager_register( STARTUP_MANAGER_MODULE_HERMITRETRO_ZXZERO, 
                             dependencies,

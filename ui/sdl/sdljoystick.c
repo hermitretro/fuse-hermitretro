@@ -24,12 +24,19 @@
 
 */
 
+//#define DEBUG
+#undef DEBUG
+#ifdef DEBUG
+#include <stdio.h>
+extern FILE *debugFile;
+#endif
+
 #include <config.h>
 
 #if !defined USE_JOYSTICK || defined HAVE_JSW_H
 /* Fake joystick, or override UI-specific handling */
 #include "../uijoystick.c"
-
+#error "Here"
 #else			/* #if !defined USE_JOYSTICK || defined HAVE_JSW_H */
 
 #include <SDL.h>
@@ -45,8 +52,13 @@ static SDL_Joystick *joystick1 = NULL;
 static SDL_Joystick *joystick2 = NULL;
 
 static void do_axis( int which, Sint16 value, input_key negative,
-		     input_key positive );
+		     input_key positive, int lastAxisValue );
 static void do_hat( int which, Uint8 value, Uint8 mask, input_key direction );
+
+/** Manage axis fluttering on joysticks */
+#define AXIS_FLUTTER_THRESHOLD 256
+static int lastAxis0Value = 0;
+static int lastAxis1Value = 0;
 
 int
 ui_joystick_init( void )
@@ -141,7 +153,7 @@ button_action( SDL_JoyButtonEvent *buttonevent, input_event_type type )
   input_event_t event;
   
   button = buttonevent->button;
-  if( button >= NUM_JOY_BUTTONS ) return;	/* We support 'only' NUM_JOY_BUTTONS (15 as defined in ui/uijoystick.h) fire buttons */
+  if( button >= NUM_JOY_BUTTONS ) return;	/* We support 'only' NUM_JOY_BUTTONS (17 as defined in ui/uijoystick.h) fire buttons */
 
   event.type = type;
   event.types.joystick.which = buttonevent->which;
@@ -153,6 +165,12 @@ button_action( SDL_JoyButtonEvent *buttonevent, input_event_type type )
 void
 sdljoystick_buttonpress( SDL_JoyButtonEvent *buttonevent )
 {
+#ifdef DEBUG
+  fprintf( debugFile, "sdljoystick_buttonpress: %d\n", buttonevent->button );
+  fprintf( debugFile, "name: %s, %d axes, %d hats, %d buttons\n", 
+           SDL_JoystickName(0), SDL_JoystickNumAxes(joystick1),
+           SDL_JoystickNumHats(joystick1), SDL_JoystickNumButtons(joystick1) );
+#endif
   button_action( buttonevent, INPUT_EVENT_JOYSTICK_PRESS );
 }
 
@@ -165,17 +183,28 @@ sdljoystick_buttonrelease( SDL_JoyButtonEvent *buttonevent )
 void
 sdljoystick_axismove( SDL_JoyAxisEvent *axisevent )
 {
-  if( axisevent->axis == 0 ) {
-    do_axis( axisevent->which, axisevent->value,
-	     INPUT_JOYSTICK_LEFT, INPUT_JOYSTICK_RIGHT );
-  } else if( axisevent->axis == 1 ) {
-    do_axis( axisevent->which, axisevent->value,
-	     INPUT_JOYSTICK_UP,   INPUT_JOYSTICK_DOWN  );
+  switch ( axisevent->axis ) {
+    case 0: {
+      do_axis( axisevent->which, axisevent->value,
+            INPUT_JOYSTICK_LEFT, INPUT_JOYSTICK_RIGHT, lastAxis0Value );
+      lastAxis0Value = axisevent->value;
+      break;
+    }
+    case 1: {
+      do_axis( axisevent->which, axisevent->value,
+            INPUT_JOYSTICK_UP, INPUT_JOYSTICK_DOWN, lastAxis1Value );
+      lastAxis1Value = axisevent->value;
+      break;
+    }
+    default: {
+      break;
+    }
   }
 }
 
 static void
-do_axis( int which, Sint16 value, input_key negative, input_key positive )
+do_axis( int which, Sint16 value, input_key negative, input_key positive,
+         int lastAxisValue )
 {
   input_event_t event1, event2;
 
@@ -191,8 +220,21 @@ do_axis( int which, Sint16 value, input_key negative, input_key positive )
     event1.type = INPUT_EVENT_JOYSTICK_PRESS;
     event2.type = INPUT_EVENT_JOYSTICK_RELEASE;
   } else {
-    event1.type = INPUT_EVENT_JOYSTICK_RELEASE;
-    event2.type = INPUT_EVENT_JOYSTICK_RELEASE;
+    /** 
+     * Check whether we're probably returning through centre of if it's
+     * just axis flutter. Thumb controller fluttering will cancel the 
+     * dpad movement
+     */
+#ifdef DEBUG2
+ fprintf( debugFile, "axismove: %d (%d ~ %d)\n", axisevent->axis, value, lastAxisValue, abs(lastAxisValue - value) );
+ fflush( debugFile );
+#endif
+    if ( abs(lastAxisValue - value) > AXIS_FLUTTER_THRESHOLD ) {
+      event1.type = INPUT_EVENT_JOYSTICK_RELEASE;
+      event2.type = INPUT_EVENT_JOYSTICK_RELEASE;
+    } else {
+      return;
+    }
   }
 
   input_event( &event1 );
@@ -204,6 +246,11 @@ sdljoystick_hatmove( SDL_JoyHatEvent *hatevent )
 {
   int which = hatevent->which;
   Uint8 value = hatevent->value;
+
+#ifdef DEBUG
+  fprintf( debugFile, "sdljoystick_hatmove: \n" );
+  fflush( debugFile );
+#endif
 
   if( hatevent->hat != 0 ) {
     return;

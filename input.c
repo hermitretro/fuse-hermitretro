@@ -327,6 +327,8 @@ get_fire_button_key( int which, input_key button )
     case INPUT_JOYSTICK_FIRE_13: return settings_current.joystick_1_fire_13;
     case INPUT_JOYSTICK_FIRE_14: return settings_current.joystick_1_fire_14;
     case INPUT_JOYSTICK_FIRE_15: return settings_current.joystick_1_fire_15;
+    case INPUT_JOYSTICK_FIRE_16: return settings_current.joystick_1_fire_16;
+    case INPUT_JOYSTICK_FIRE_17: return settings_current.joystick_1_fire_17;
     default: break;
     }
     break;
@@ -348,6 +350,8 @@ get_fire_button_key( int which, input_key button )
     case INPUT_JOYSTICK_FIRE_13: return settings_current.joystick_2_fire_13;
     case INPUT_JOYSTICK_FIRE_14: return settings_current.joystick_2_fire_14;
     case INPUT_JOYSTICK_FIRE_15: return settings_current.joystick_2_fire_15;
+    case INPUT_JOYSTICK_FIRE_16: return settings_current.joystick_2_fire_16;
+    case INPUT_JOYSTICK_FIRE_17: return settings_current.joystick_2_fire_17;
     default: break;
     }
     break;
@@ -385,7 +389,10 @@ do_joystick( const input_event_joystick_t *joystick_event, int press )
 
   which = joystick_event->which;
 
-  if( joystick_event->button < INPUT_JOYSTICK_FIRE_1 ) {
+  /** AD: Bit of a bodge around the extra PS3 controller buttons */
+  if( joystick_event->button < INPUT_JOYSTICK_FIRE_1 ||
+      (joystick_event->button >= INPUT_JOYSTICK_FIRE_14 &&
+       joystick_event->button <= INPUT_JOYSTICK_FIRE_17) ) {
 
     joystick_button button;
 
@@ -394,6 +401,10 @@ do_joystick( const input_event_joystick_t *joystick_event, int press )
     case INPUT_JOYSTICK_DOWN : button = JOYSTICK_BUTTON_DOWN;  break;
     case INPUT_JOYSTICK_LEFT : button = JOYSTICK_BUTTON_LEFT;  break;
     case INPUT_JOYSTICK_RIGHT: button = JOYSTICK_BUTTON_RIGHT; break;
+    case INPUT_JOYSTICK_FIRE_14: button = JOYSTICK_BUTTON_UP; break;
+    case INPUT_JOYSTICK_FIRE_15: button = JOYSTICK_BUTTON_DOWN; break;
+    case INPUT_JOYSTICK_FIRE_16: button = JOYSTICK_BUTTON_LEFT; break;
+    case INPUT_JOYSTICK_FIRE_17: button = JOYSTICK_BUTTON_RIGHT; break;
 
     default:
       ui_error( UI_ERROR_ERROR, "do_joystick: unknown button %d",
