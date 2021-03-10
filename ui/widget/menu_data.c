@@ -34,8 +34,6 @@
 
 static widget_menu_entry menu_options_joysticks[] = {
   { "Joysticks" },
-  { "Joystick \0121\011...", INPUT_KEY_1, NULL, menu_options_joysticks_select, menu_joystick_1_detail, 1 },
-  { "Joystick \0122\011...", INPUT_KEY_2, NULL, menu_options_joysticks_select, menu_joystick_2_detail, 2 },
   { "\012K\011eyboard...", INPUT_KEY_k, NULL, menu_options_joysticks_select, menu_keyboard_joystick_detail, 3 },
   { NULL }
 };
@@ -68,6 +66,7 @@ static widget_menu_entry menu_help[] = {
 widget_menu_entry widget_menu[] = {
   { "Main menu" },
   { "\012O\011pen", INPUT_KEY_o, NULL, menu_open, NULL, 0 },
+  { "\012B\011acklight", INPUT_KEY_b, NULL, menu_backlight, NULL, 0 },
   { "\012O\011ptions", INPUT_KEY_o, menu_options, NULL, NULL, 0 },
   { "\012M\011achine", INPUT_KEY_m, menu_machine, NULL, NULL, 0 },
   { "\012H\011elp", INPUT_KEY_h, menu_help, NULL, NULL, 0 },

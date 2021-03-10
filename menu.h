@@ -55,6 +55,7 @@
 
 #ifdef BUILD_HERMITRETRO_ZXZERO
 MENU_CALLBACK( menu_open );
+MENU_CALLBACK( menu_backlight );
 #endif
 MENU_CALLBACK( menu_file_open );
 MENU_CALLBACK( menu_file_recording_continuerecording );

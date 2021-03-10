@@ -784,7 +784,13 @@ ui_popup_menu( int native_key )
     widget_do_menu( widget_menu );
     fuse_emulation_unpause();
     break;
-#ifndef BUILD_HERMITRETRO_ZXZERO
+#ifdef BUILD_HERMITRETRO_ZXZERO
+  case INPUT_KEY_F2:
+    fuse_emulation_pause();
+    menu_backlight( 0 );
+    fuse_emulation_unpause();
+    break;
+#else
   case INPUT_KEY_F2:
     fuse_emulation_pause();
     menu_file_savesnapshot( 0 );

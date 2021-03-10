@@ -120,7 +120,17 @@ _hermitretro_zxzero_init( void )
     debugFile = fopen( "/tmp/fuse.txt", "wb" );
 #endif
 
+  /** Fuse menu button */
   bcm2835_gpio_fsel( HERMITRETRO_ZXZERO_FUSE_MENU_PIN, BCM2835_GPIO_FSEL_INPT );
+
+  /** Zelux switch */
+  /**
+   * There is a pull resistor dictating the default state of this pin
+   * Read the pin first, then set it as an output
+   */
+  bcm2835_gpio_fsel( HERMITRETRO_ZXZERO_ZELUX_PWR_PIN, BCM2835_GPIO_FSEL_INPT );
+  zeluxState = bcm2835_gpio_lev( HERMITRETRO_ZXZERO_ZELUX_PWR_PIN );
+  bcm2835_gpio_fsel( HERMITRETRO_ZXZERO_ZELUX_PWR_PIN, BCM2835_GPIO_FSEL_OUTP );
 
   return 0;
 }
@@ -172,6 +182,18 @@ hermitretro_zxzero_poll( void )
     input_event( &fuse_event );
 
     return;
+  }
+}
+
+void
+hermitretro_zxzero_toggleZelux( void )
+{
+  if ( zeluxState == 0 ) {
+    zeluxState = 1;
+    bcm2835_gpio_set( HERMITRETRO_ZXZERO_ZELUX_PWR_PIN );
+  } else {
+    zeluxState = 0;
+    bcm2835_gpio_clr( HERMITRETRO_ZXZERO_ZELUX_PWR_PIN );
   }
 }
 

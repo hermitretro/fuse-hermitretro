@@ -36,7 +36,6 @@ extern FILE *debugFile;
 #if !defined USE_JOYSTICK || defined HAVE_JSW_H
 /* Fake joystick, or override UI-specific handling */
 #include "../uijoystick.c"
-#error "Here"
 #else			/* #if !defined USE_JOYSTICK || defined HAVE_JSW_H */
 
 #include <SDL.h>

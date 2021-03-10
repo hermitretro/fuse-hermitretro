@@ -328,6 +328,8 @@ static void widget_bw_tv_click( void );
 static void widget_option_bw_tv_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
 static void widget_pal_tv2x_click( void );
 static void widget_option_pal_tv2x_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
+static void widget_full_screen_click( void );
+static void widget_option_full_screen_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
 static void widget_statusbar_click( void );
 static void widget_option_statusbar_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
 static void widget_joy_prompt_click( void );
@@ -386,6 +388,10 @@ static void widget_speccyboot_click( void );
 static void widget_option_speccyboot_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
 static void widget_specdrum_click( void );
 static void widget_option_specdrum_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
+static void widget_spectranet_click( void );
+static void widget_option_spectranet_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
+static void widget_spectranet_disable_click( void );
+static void widget_option_spectranet_disable_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
 static void widget_usource_click( void );
 static void widget_option_usource_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
 static void widget_covox_click( void );
@@ -509,10 +515,11 @@ static widget_option_entry options_general[] = {
   { "RS-232 \012h\001andshake", 8, INPUT_KEY_h, NULL, NULL, widget_rs232_handshake_click, widget_option_rs232_handshake_draw },
   { "Black and white T\012V\001", 9, INPUT_KEY_v, NULL, NULL, widget_bw_tv_click, widget_option_bw_tv_draw },
   { "\012P\001AL-TV use TV2x effect", 10, INPUT_KEY_p, NULL, NULL, widget_pal_tv2x_click, widget_option_pal_tv2x_draw },
-  { "Show status\012b\001ar", 11, INPUT_KEY_b, NULL, NULL, widget_statusbar_click, widget_option_statusbar_draw },
-  { "Snap \012j\001oystick prompt", 12, INPUT_KEY_j, NULL, NULL, widget_joy_prompt_click, widget_option_joy_prompt_draw },
-  { "\012C\001onfirm actions", 13, INPUT_KEY_c, NULL, NULL, widget_confirm_actions_click, widget_option_confirm_actions_draw },
-  { "A\012u\001to-save settings", 14, INPUT_KEY_u, NULL, NULL, widget_autosave_settings_click, widget_option_autosave_settings_draw },
+  { "Full \012s\001creen", 11, INPUT_KEY_s, NULL, NULL, widget_full_screen_click, widget_option_full_screen_draw },
+  { "Show status\012b\001ar", 12, INPUT_KEY_b, NULL, NULL, widget_statusbar_click, widget_option_statusbar_draw },
+  { "Snap \012j\001oystick prompt", 13, INPUT_KEY_j, NULL, NULL, widget_joy_prompt_click, widget_option_joy_prompt_draw },
+  { "\012C\001onfirm actions", 14, INPUT_KEY_c, NULL, NULL, widget_confirm_actions_click, widget_option_confirm_actions_draw },
+  { "A\012u\001to-save settings", 15, INPUT_KEY_u, NULL, NULL, widget_autosave_settings_click, widget_option_autosave_settings_draw },
   { NULL }
 };
 
@@ -547,8 +554,10 @@ static widget_option_entry options_peripherals_general[] = {
   { "\012Z\001X Printer", 12, INPUT_KEY_z, NULL, NULL, widget_zxprinter_click, widget_option_zxprinter_draw },
   { "Speccy\012B\001oot interface", 13, INPUT_KEY_b, NULL, NULL, widget_speccyboot_click, widget_option_speccyboot_draw },
   { "Spec\012D\001rum interface", 14, INPUT_KEY_d, NULL, NULL, widget_specdrum_click, widget_option_specdrum_draw },
-  { "uSo\012u\001rce", 15, INPUT_KEY_u, NULL, NULL, widget_usource_click, widget_option_usource_draw },
-  { "C\012o\001vox interface", 16, INPUT_KEY_o, NULL, NULL, widget_covox_click, widget_option_covox_draw },
+  { "Spectra\012n\001et", 15, INPUT_KEY_n, NULL, NULL, widget_spectranet_click, widget_option_spectranet_draw },
+  { "Spe\012c\001tranet disable", 16, INPUT_KEY_c, NULL, NULL, widget_spectranet_disable_click, widget_option_spectranet_disable_draw },
+  { "uSo\012u\001rce", 17, INPUT_KEY_u, NULL, NULL, widget_usource_click, widget_option_usource_draw },
+  { "C\012o\001vox interface", 18, INPUT_KEY_o, NULL, NULL, widget_covox_click, widget_option_covox_draw },
   { NULL }
 };
 
@@ -1019,6 +1028,18 @@ widget_option_pal_tv2x_draw( int left_edge, int width, struct widget_option_entr
 }
 
 static void
+widget_full_screen_click( void )
+{
+  widget_options_settings.full_screen = ! widget_options_settings.full_screen;
+}
+
+static void
+widget_option_full_screen_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
+{
+  widget_options_print_option( left_edge, width, menu->index, menu->text, show->full_screen );
+}
+
+static void
 widget_statusbar_click( void )
 {
   widget_options_settings.statusbar = ! widget_options_settings.statusbar;
@@ -1079,7 +1100,7 @@ widget_general_keyhandler( input_key key )
 
 #if 0
   case INPUT_KEY_Resize:	/* Fake keypress used on window resize */
-    widget_dialog_with_border( 1, 2, 30, 2 + 15 );
+    widget_dialog_with_border( 1, 2, 30, 2 + 16 );
     widget_general_show_all( &widget_options_settings );
     break;
 #endif
@@ -1102,7 +1123,7 @@ widget_general_keyhandler( input_key key )
   case INPUT_KEY_Down:
   case INPUT_KEY_6:
   case INPUT_JOYSTICK_DOWN:
-    if ( highlight_line + 1 < 15 ) {
+    if ( highlight_line + 1 < 16 ) {
       new_highlight_line = highlight_line + 1;
       cursor_pressed = 1;
     }
@@ -1116,8 +1137,8 @@ widget_general_keyhandler( input_key key )
     break;
 
   case INPUT_KEY_End:
-    if ( highlight_line + 2 < 15 ) {
-      new_highlight_line = 15 - 1;
+    if ( highlight_line + 2 < 16 ) {
+      new_highlight_line = 16 - 1;
       cursor_pressed = 1;
     }
     break;
@@ -1598,6 +1619,30 @@ widget_option_specdrum_draw( int left_edge, int width, struct widget_option_entr
 }
 
 static void
+widget_spectranet_click( void )
+{
+  widget_options_settings.spectranet = ! widget_options_settings.spectranet;
+}
+
+static void
+widget_option_spectranet_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
+{
+  widget_options_print_option( left_edge, width, menu->index, menu->text, show->spectranet );
+}
+
+static void
+widget_spectranet_disable_click( void )
+{
+  widget_options_settings.spectranet_disable = ! widget_options_settings.spectranet_disable;
+}
+
+static void
+widget_option_spectranet_disable_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
+{
+  widget_options_print_option( left_edge, width, menu->index, menu->text, show->spectranet_disable );
+}
+
+static void
 widget_usource_click( void )
 {
   widget_options_settings.usource = ! widget_options_settings.usource;
@@ -1634,7 +1679,7 @@ widget_peripherals_general_keyhandler( input_key key )
 
 #if 0
   case INPUT_KEY_Resize:	/* Fake keypress used on window resize */
-    widget_dialog_with_border( 1, 2, 30, 2 + 17 );
+    widget_dialog_with_border( 1, 2, 30, 2 + 19 );
     widget_peripherals_general_show_all( &widget_options_settings );
     break;
 #endif
@@ -1657,7 +1702,7 @@ widget_peripherals_general_keyhandler( input_key key )
   case INPUT_KEY_Down:
   case INPUT_KEY_6:
   case INPUT_JOYSTICK_DOWN:
-    if ( highlight_line + 1 < 17 ) {
+    if ( highlight_line + 1 < 19 ) {
       new_highlight_line = highlight_line + 1;
       cursor_pressed = 1;
     }
@@ -1671,8 +1716,8 @@ widget_peripherals_general_keyhandler( input_key key )
     break;
 
   case INPUT_KEY_End:
-    if ( highlight_line + 2 < 17 ) {
-      new_highlight_line = 17 - 1;
+    if ( highlight_line + 2 < 19 ) {
+      new_highlight_line = 19 - 1;
       cursor_pressed = 1;
     }
     break;

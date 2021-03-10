@@ -79,6 +79,7 @@ File/E_xit..., Item, F10
 #else
 # Hermit Retro ZXZero replacement for 'File' menu
 _Open, Item, F1
+_Backlight, Item, F2
 #endif
 
 _Options, Branch

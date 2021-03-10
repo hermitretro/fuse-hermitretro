@@ -61,6 +61,9 @@
 #include "ui/uimedia.h"
 #include "utils.h"
 #include "z80/z80.h"
+#ifdef BUILD_HERMITRETRO_ZXZERO
+#include "peripherals/hermitretro/hermitretro_zxzero.h"
+#endif
 
 static int menu_select_machine_roms( libspectrum_machine machine, size_t start,
 				     size_t n );
@@ -1252,3 +1255,11 @@ MENU_CALLBACK( menu_machine_didaktiksnap )
   didaktik80_snap = 1;
   event_add( 0, z80_nmi_event );
 }
+
+#ifdef BUILD_HERMITRETRO_ZXZERO
+MENU_CALLBACK( menu_backlight ) {
+  hermitretro_zxzero_toggleZelux();
+  ui_widget_finish();
+}
+#endif
+
