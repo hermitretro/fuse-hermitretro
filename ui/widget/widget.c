@@ -550,10 +550,13 @@ int widget_do( widget_type which, void *data )
     }
 
   } else {
+#ifdef BUILD_HERMITRETRO_ZXZERO
+    /** Autosave the settings when we exit the widget structure */
+    settings_write_config( &settings_current ); 
+#endif
 
     /* Refresh the Spectrum's display, including the border */
     display_refresh_all();
-
   }
 
   return 0;
