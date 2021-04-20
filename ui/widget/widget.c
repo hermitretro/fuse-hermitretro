@@ -553,6 +553,11 @@ int widget_do( widget_type which, void *data )
 #ifdef BUILD_HERMITRETRO_ZXZERO
     /** Autosave the settings when we exit the widget structure */
     settings_write_config( &settings_current ); 
+    /** 
+     * Flush fileystems in case we power off before the changes actually
+     * are written
+     */
+    sync();
 #endif
 
     /* Refresh the Spectrum's display, including the border */
