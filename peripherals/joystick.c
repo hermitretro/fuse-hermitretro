@@ -262,6 +262,7 @@ joystick_fuller_read( libspectrum_word port GCC_UNUSED, libspectrum_byte *attach
 static void
 joystick_from_snapshot( libspectrum_snap *snap )
 {
+#ifndef BUILD_HERMITRETRO_ZXZERO
   size_t i;
   size_t num_joysticks = libspectrum_snap_joystick_active_count( snap );
   joystick_type_t fuse_type;
@@ -321,6 +322,7 @@ joystick_from_snapshot( libspectrum_snap *snap )
     if( fuse_type == JOYSTICK_TYPE_KEMPSTON )
       settings_current.joy_kempston = 1;
   }
+#endif
 }
 
 static void
@@ -329,6 +331,13 @@ add_joystick( libspectrum_snap *snap, joystick_type_t fuse_type, int inputs )
   size_t i;
   size_t num_joysticks = libspectrum_snap_joystick_active_count( snap );
   libspectrum_joystick libspectrum_type;
+
+#ifdef DEBUG
+  if ( debugFile != NULL ) {
+    fprintf( debugFile, "add_joystick: %d\n", fuse_type );
+    fflush( debugFile );
+  }
+#endif
 
   switch( fuse_type ) {
   case JOYSTICK_TYPE_CURSOR:
