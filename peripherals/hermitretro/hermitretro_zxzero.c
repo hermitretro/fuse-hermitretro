@@ -67,8 +67,14 @@ hermitretro_zxzero_init( void *context )
   char *start_scaler;
 
   int rv = _hermitretro_zxzero_init();
+  if ( rv != 0 ) {
+    return rv;
+  }
 
   module_register( &hermitretro_zxzero_module_info );
+
+  /** Default to autosaving settings */
+  settings_current.autosave_settings = 1;
 
   /** Default to having a Kempston joystick available and the default choice */
   settings_current.joy_kempston = 1;
@@ -86,7 +92,7 @@ hermitretro_zxzero_init( void *context )
   start_scaler = utils_safe_strdup( "2x" );
 
   error = scaler_select_id( start_scaler ); libspectrum_free( start_scaler );
-  if( error ) return error;
+  if ( error ) return error;
 
   return rv;
 }
@@ -120,6 +126,10 @@ _hermitretro_zxzero_init( void )
     debugFile = fopen( "/tmp/fuse.txt", "wb" );
 #endif
 
+  if ( gpioInit == 0 ) {
+    return 0;
+  }
+
   /** Fuse menu button */
   bcm2835_gpio_fsel( HERMITRETRO_ZXZERO_FUSE_MENU_PIN, BCM2835_GPIO_FSEL_INPT );
 
@@ -141,6 +151,11 @@ _hermitretro_zxzero_init( void )
 void
 hermitretro_zxzero_poll( void )
 {
+
+  if ( gpioInit == 0 ) {
+    return;
+  }
+
   if ( debounceEvent( HERMITRETRO_ZXZERO_MENU_DEBOUNCE_IN_MS ) ) {
     return;
   }
@@ -188,6 +203,10 @@ hermitretro_zxzero_poll( void )
 void
 hermitretro_zxzero_toggleZelux( void )
 {
+  if ( gpioInit == 0 ) {
+    return;
+  }
+
   if ( zeluxState == 0 ) {
     zeluxState = 1;
     bcm2835_gpio_set( HERMITRETRO_ZXZERO_ZELUX_PWR_PIN );

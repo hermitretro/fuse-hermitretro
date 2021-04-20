@@ -82,10 +82,10 @@ _Open, Item, F1
 _Backlight, Item, F2
 #endif
 
-_Options, Branch
-#ifndef BUILD_HERMITRETRO_ZXZERO
+O_ptions, Branch
 Options/_General..., Item, F4
 Options/_Media..., Item
+#ifndef BUILD_HERMITRETRO_ZXZERO
 Options/_Sound..., Item
 
 Options/_Peripherals, Branch

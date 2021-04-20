@@ -58,7 +58,7 @@ static module_info_t gpio_common_module_info = {
 int
 gpio_common_init( void *context )
 {
-  bcm2835_init();
+  gpioInit = bcm2835_init();
 
   updateLastEventTime();
 
