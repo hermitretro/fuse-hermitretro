@@ -286,3 +286,5 @@ disk_try_merge, string, NULL
 disk_ask_merge, boolean, 1
 
 debugger_command, string, NULL
+
+zxdbfs_path, string, "/mnt/zxdbfs", 'z', zxdbfspath, zxdbfspath

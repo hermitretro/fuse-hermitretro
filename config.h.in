@@ -24,6 +24,9 @@
 /* Defined if we support spectranet */
 #undef BUILD_SPECTRANET
 
+/* Defined if building the ZXDBFS support */
+#undef BUILD_ZXDBFS
+
 /* DirectX 7 or higher is required */
 #undef DIRECTSOUND_VERSION
 

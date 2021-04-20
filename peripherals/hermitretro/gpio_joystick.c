@@ -101,6 +101,9 @@ int
 gpio_joystick_init( void *context )
 {
   /** gpio_common_init() should be been called before this */
+  if ( gpioInit == 0 ) {
+    return 0;
+  }
 
   int rv = _gpio_joystick_init();
 
@@ -149,6 +152,11 @@ _gpio_joystick_init( void )
 void
 gpio_joystick_poll( void )
 {
+
+  if ( gpioInit == 0 ) {
+    return;
+  }
+
   /** Make the joystick events less flighty when in widget mode */
   unsigned long long debounceInterval = GPIO_JOYSTICK_DEBOUNCE_IN_MS;
   if ( ui_widget_level > -1 ) {

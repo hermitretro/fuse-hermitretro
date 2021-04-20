@@ -22,6 +22,9 @@
 
 */
 
+#include <string.h>
+#include <unistd.h>
+
 #include <config.h>
 
 #include <libspectrum.h>
@@ -59,6 +62,7 @@
 #include "ui/scaler/scaler.h"
 #include "ui/ui.h"
 #include "ui/uimedia.h"
+#include "ui/widget/widget_internals.h"
 #include "utils.h"
 #include "z80/z80.h"
 #ifdef BUILD_HERMITRETRO_ZXZERO
@@ -74,6 +78,10 @@ static int menu_select_peripheral_roms( const char *peripheral_name,
 #ifdef BUILD_HERMITRETRO_ZXZERO
 MENU_CALLBACK( menu_open ) {
     menu_file_open( 0 );
+}
+
+MENU_CALLBACK( menu_search ) {
+    menu_file_search( 0 );
 }
 #endif
 
@@ -94,6 +102,52 @@ MENU_CALLBACK( menu_file_open )
 
   fuse_emulation_unpause();
 }
+
+#ifdef BUILD_ZXDBFS
+MENU_CALLBACK( menu_file_search )
+{
+  char *filename;
+
+  fuse_emulation_pause();
+
+  widget_text_t text_data;
+
+  text_data.title = "ZXDBFS Search";
+  text_data.allow = WIDGET_INPUT_ALNUM;
+  text_data.max_length = 32;
+  memset( text_data.text, 0, sizeof( text_data.text ) );
+  widget_do_text( &text_data );
+
+  if( widget_text_text ) {
+    char dir[256];
+    sprintf( dir, "%s/search/%s", settings_current.zxdbfs_path, widget_text_text );
+    /** Changing to the search results directory will trigger ZXDBFS search */
+    int rv = chdir( dir );
+    if ( rv == 0 ) {
+      filename = ui_get_open_filename( "Fuse - Open Spectrum File" );
+      if( !filename ) { fuse_emulation_unpause(); return; }
+
+      utils_open_file( filename, tape_can_autoload(), NULL );
+
+      libspectrum_free( filename );
+    } else {
+      widget_error_t error_info;
+      error_info.severity = UI_ERROR_ERROR;
+      error_info.message = "Search failed. Is the ZXDBFS path correct? Is ZXDBFS running?";
+      widget_do_error( &error_info );
+    }
+  } else {
+    widget_error_t error_info;
+    error_info.severity = UI_ERROR_ERROR;
+    error_info.message = "Please enter a search term.";
+    widget_do_error( &error_info );
+  }
+
+  display_refresh_all();
+
+  fuse_emulation_unpause();
+}
+#endif
 
 MENU_CALLBACK( menu_file_recording_insertsnapshot )
 {

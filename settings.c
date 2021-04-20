@@ -306,6 +306,7 @@ settings_info settings_default = {
   /* zxcf_active */ 0,
   /* zxcf_pri_file */ (char *)NULL,
   /* zxcf_upload */ 0,
+  /* zxdbfs_path */ (char *)"/mnt/zxdbfs",
   /* zxmmc_enabled */ 0,
   /* zxmmc_file */ (char *)NULL,
   /* zxprinter */ 1,
@@ -2182,6 +2183,14 @@ parse_xml( xmlDocPtr doc, settings_info *settings )
         xmlFree( xmlstring );
       }
     } else
+    if( !strcmp( (const char*)node->name, "zxdbfspath" ) ) {
+      xmlstring = xmlNodeListGetString( doc, node->xmlChildrenNode, 1 );
+      if( xmlstring ) {
+        libspectrum_free( settings->zxdbfs_path );
+        settings->zxdbfs_path = utils_safe_strdup( (char*)xmlstring );
+        xmlFree( xmlstring );
+      }
+    } else
     if( !strcmp( (const char*)node->name, "zxmmc" ) ) {
       xmlstring = xmlNodeListGetString( doc, node->xmlChildrenNode, 1 );
       if( xmlstring ) {
@@ -2639,6 +2648,8 @@ settings_write_config( settings_info *settings )
   if( settings->zxcf_pri_file )
     xmlNewTextChild( root, NULL, (const xmlChar*)"zxcfcffile", (const xmlChar*)settings->zxcf_pri_file );
   xmlNewTextChild( root, NULL, (const xmlChar*)"zxcfupload", (const xmlChar*)(settings->zxcf_upload ? "1" : "0") );
+  if( settings->zxdbfs_path )
+    xmlNewTextChild( root, NULL, (const xmlChar*)"zxdbfspath", (const xmlChar*)settings->zxdbfs_path );
   xmlNewTextChild( root, NULL, (const xmlChar*)"zxmmc", (const xmlChar*)(settings->zxmmc_enabled ? "1" : "0") );
   if( settings->zxmmc_file )
     xmlNewTextChild( root, NULL, (const xmlChar*)"zxmmcfile", (const xmlChar*)settings->zxmmc_file );
@@ -3683,6 +3694,10 @@ settings_var( settings_info *settings, unsigned char *name, unsigned char *last,
     *val_int = &settings->zxcf_upload;
     return 0;
   }
+  if( n == 10 && !strncmp( (const char *)name, "zxdbfspath", n ) ) {
+    *val_char = &settings->zxdbfs_path;
+    return 0;
+  }
   if( n == 5 && !strncmp( (const char *)name, "zxmmc", n ) ) {
     *val_int = &settings->zxmmc_enabled;
     return 0;
@@ -4509,6 +4524,9 @@ settings_write_config( settings_info *settings )
   if( settings_boolean_write( doc, "zxcfupload",
                               settings->zxcf_upload ) )
     goto error;
+  if( settings_string_write( doc, "zxdbfspath",
+                             settings->zxdbfs_path ) )
+    goto error;
   if( settings_boolean_write( doc, "zxmmc",
                               settings->zxmmc_enabled ) )
     goto error;
@@ -4851,6 +4869,7 @@ settings_command_line( settings_info *settings, int *first_arg,
     { "zxcf-cffile", 1, NULL, 415 },
     {    "zxcf-upload", 0, &(settings->zxcf_upload), 1 },
     { "no-zxcf-upload", 0, &(settings->zxcf_upload), 0 },
+    { "zxdbfspath", 1, NULL, 'z' },
     {    "zxmmc", 0, &(settings->zxmmc_enabled), 1 },
     { "no-zxmmc", 0, &(settings->zxmmc_enabled), 0 },
     { "zxmmc-file", 1, NULL, 416 },
@@ -5050,6 +5069,7 @@ settings_command_line( settings_info *settings, int *first_arg,
     case 413: settings_set_string( &settings->zxatasp_master_file, optarg ); break;
     case 414: settings_set_string( &settings->zxatasp_slave_file, optarg ); break;
     case 415: settings_set_string( &settings->zxcf_pri_file, optarg ); break;
+    case 'z': settings_set_string( &settings->zxdbfs_path, optarg ); break;
     case 416: settings_set_string( &settings->zxmmc_file, optarg ); break;
 #line 657"./settings.pl"
 
@@ -5656,6 +5676,10 @@ settings_copy_internal( settings_info *dest, settings_info *src )
     dest->zxcf_pri_file = utils_safe_strdup( src->zxcf_pri_file );
   }
   dest->zxcf_upload = src->zxcf_upload;
+  dest->zxdbfs_path = NULL;
+  if( src->zxdbfs_path ) {
+    dest->zxdbfs_path = utils_safe_strdup( src->zxdbfs_path );
+  }
   dest->zxmmc_enabled = src->zxmmc_enabled;
   dest->zxmmc_file = NULL;
   if( src->zxmmc_file ) {
@@ -5865,6 +5889,7 @@ settings_free( settings_info *settings )
   if( settings->zxatasp_master_file ) libspectrum_free( settings->zxatasp_master_file );
   if( settings->zxatasp_slave_file ) libspectrum_free( settings->zxatasp_slave_file );
   if( settings->zxcf_pri_file ) libspectrum_free( settings->zxcf_pri_file );
+  if( settings->zxdbfs_path ) libspectrum_free( settings->zxdbfs_path );
   if( settings->zxmmc_file ) libspectrum_free( settings->zxmmc_file );
 #line 802"./settings.pl"
 

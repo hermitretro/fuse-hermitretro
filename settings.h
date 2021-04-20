@@ -268,6 +268,7 @@ typedef struct settings_info {
    int zxcf_active;
   char *zxcf_pri_file;
    int zxcf_upload;
+  char *zxdbfs_path;
    int zxmmc_enabled;
   char *zxmmc_file;
    int zxprinter;

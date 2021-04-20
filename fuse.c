@@ -550,6 +550,9 @@ static void fuse_show_help( void )
    "--speed <percentage>   How fast should emulation run?\n"
    "--fb-mode <mode>       Which mode should be used for FB?\n"
    "--tape <filename>      Open tape file <filename>.\n"
+#ifdef BUILD_ZXDBFS
+   "--zxdbfspath <path>    Use ZXDBFS mounted at <path>.\n"
+#endif
    "--version              Print version number and exit.\n"
    "\n"
    "For help, please mail <fuse-emulator-devel@lists.sf.net> or use\n"

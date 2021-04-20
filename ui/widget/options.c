@@ -308,36 +308,6 @@ option_enumerate_movie_movie_compr( void ) {
 static int  widget_general_running = 0;
 static void widget_emulation_speed_click( void );
 static void widget_option_emulation_speed_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_frame_rate_click( void );
-static void widget_option_frame_rate_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_issue2_click( void );
-static void widget_option_issue2_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_recreated_spectrum_click( void );
-static void widget_option_recreated_spectrum_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_keyboard_arrows_shifted_click( void );
-static void widget_option_keyboard_arrows_shifted_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_writable_roms_click( void );
-static void widget_option_writable_roms_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_late_timings_click( void );
-static void widget_option_late_timings_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_z80_is_cmos_click( void );
-static void widget_option_z80_is_cmos_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_rs232_handshake_click( void );
-static void widget_option_rs232_handshake_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_bw_tv_click( void );
-static void widget_option_bw_tv_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_pal_tv2x_click( void );
-static void widget_option_pal_tv2x_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_full_screen_click( void );
-static void widget_option_full_screen_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_statusbar_click( void );
-static void widget_option_statusbar_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_joy_prompt_click( void );
-static void widget_option_joy_prompt_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_confirm_actions_click( void );
-static void widget_option_confirm_actions_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
-static void widget_autosave_settings_click( void );
-static void widget_option_autosave_settings_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
 static int  widget_media_running = 0;
 static void widget_auto_load_click( void );
 static void widget_option_auto_load_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show );
@@ -505,21 +475,6 @@ static void widget_option_movie_stop_after_rzx_draw( int left_edge, int width, s
 static widget_option_entry options_general[] = {
   { "General Options" },
   { "\012E\001mulation speed", 0, INPUT_KEY_e, "%", NULL, widget_emulation_speed_click, widget_option_emulation_speed_draw },
-  { "F\012r\001ame rate (1:n)", 1, INPUT_KEY_r, "frames", NULL, widget_frame_rate_click, widget_option_frame_rate_draw },
-  { "Issue \0122\001 keyboard", 2, INPUT_KEY_2, NULL, NULL, widget_issue2_click, widget_option_issue2_draw },
-  { "Recrea\012t\001ed ZX Spectrum", 3, INPUT_KEY_t, NULL, NULL, widget_recreated_spectrum_click, widget_option_recreated_spectrum_draw },
-  { "Use shift with \012a\001rrow keys", 4, INPUT_KEY_a, NULL, NULL, widget_keyboard_arrows_shifted_click, widget_option_keyboard_arrows_shifted_draw },
-  { "Allow \012w\001rites to ROM", 5, INPUT_KEY_w, NULL, NULL, widget_writable_roms_click, widget_option_writable_roms_draw },
-  { "Late t\012i\001mings", 6, INPUT_KEY_i, NULL, NULL, widget_late_timings_click, widget_option_late_timings_draw },
-  { "\012Z\00180 is CMOS", 7, INPUT_KEY_z, NULL, NULL, widget_z80_is_cmos_click, widget_option_z80_is_cmos_draw },
-  { "RS-232 \012h\001andshake", 8, INPUT_KEY_h, NULL, NULL, widget_rs232_handshake_click, widget_option_rs232_handshake_draw },
-  { "Black and white T\012V\001", 9, INPUT_KEY_v, NULL, NULL, widget_bw_tv_click, widget_option_bw_tv_draw },
-  { "\012P\001AL-TV use TV2x effect", 10, INPUT_KEY_p, NULL, NULL, widget_pal_tv2x_click, widget_option_pal_tv2x_draw },
-  { "Full \012s\001creen", 11, INPUT_KEY_s, NULL, NULL, widget_full_screen_click, widget_option_full_screen_draw },
-  { "Show status\012b\001ar", 12, INPUT_KEY_b, NULL, NULL, widget_statusbar_click, widget_option_statusbar_draw },
-  { "Snap \012j\001oystick prompt", 13, INPUT_KEY_j, NULL, NULL, widget_joy_prompt_click, widget_option_joy_prompt_draw },
-  { "\012C\001onfirm actions", 14, INPUT_KEY_c, NULL, NULL, widget_confirm_actions_click, widget_option_confirm_actions_draw },
-  { "A\012u\001to-save settings", 15, INPUT_KEY_u, NULL, NULL, widget_autosave_settings_click, widget_option_autosave_settings_draw },
   { NULL }
 };
 
@@ -895,198 +850,6 @@ widget_option_emulation_speed_draw( int left_edge, int width, struct widget_opti
                               menu->suffix );
 }
 
-static void
-widget_frame_rate_click( void )
-{
-  widget_text_t text_data;
-
-  text_data.title = "Frame rate (1:n)";
-  text_data.allow = WIDGET_INPUT_DIGIT;
-  text_data.max_length = 1;
-  snprintf( text_data.text, 40, "%d",
-            widget_options_settings.frame_rate );
-  widget_do_text( &text_data );
-
-  if( widget_text_text ) {
-    widget_options_settings.frame_rate = atoi( widget_text_text );
-  }
-}
-
-static void
-widget_option_frame_rate_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_entry( left_edge, width, menu->index, menu->text, show->frame_rate,
-                              menu->suffix );
-}
-
-static void
-widget_issue2_click( void )
-{
-  widget_options_settings.issue2 = ! widget_options_settings.issue2;
-}
-
-static void
-widget_option_issue2_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->issue2 );
-}
-
-static void
-widget_recreated_spectrum_click( void )
-{
-  widget_options_settings.recreated_spectrum = ! widget_options_settings.recreated_spectrum;
-}
-
-static void
-widget_option_recreated_spectrum_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->recreated_spectrum );
-}
-
-static void
-widget_keyboard_arrows_shifted_click( void )
-{
-  widget_options_settings.keyboard_arrows_shifted = ! widget_options_settings.keyboard_arrows_shifted;
-}
-
-static void
-widget_option_keyboard_arrows_shifted_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->keyboard_arrows_shifted );
-}
-
-static void
-widget_writable_roms_click( void )
-{
-  widget_options_settings.writable_roms = ! widget_options_settings.writable_roms;
-}
-
-static void
-widget_option_writable_roms_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->writable_roms );
-}
-
-static void
-widget_late_timings_click( void )
-{
-  widget_options_settings.late_timings = ! widget_options_settings.late_timings;
-}
-
-static void
-widget_option_late_timings_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->late_timings );
-}
-
-static void
-widget_z80_is_cmos_click( void )
-{
-  widget_options_settings.z80_is_cmos = ! widget_options_settings.z80_is_cmos;
-}
-
-static void
-widget_option_z80_is_cmos_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->z80_is_cmos );
-}
-
-static void
-widget_rs232_handshake_click( void )
-{
-  widget_options_settings.rs232_handshake = ! widget_options_settings.rs232_handshake;
-}
-
-static void
-widget_option_rs232_handshake_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->rs232_handshake );
-}
-
-static void
-widget_bw_tv_click( void )
-{
-  widget_options_settings.bw_tv = ! widget_options_settings.bw_tv;
-}
-
-static void
-widget_option_bw_tv_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->bw_tv );
-}
-
-static void
-widget_pal_tv2x_click( void )
-{
-  widget_options_settings.pal_tv2x = ! widget_options_settings.pal_tv2x;
-}
-
-static void
-widget_option_pal_tv2x_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->pal_tv2x );
-}
-
-static void
-widget_full_screen_click( void )
-{
-  widget_options_settings.full_screen = ! widget_options_settings.full_screen;
-}
-
-static void
-widget_option_full_screen_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->full_screen );
-}
-
-static void
-widget_statusbar_click( void )
-{
-  widget_options_settings.statusbar = ! widget_options_settings.statusbar;
-}
-
-static void
-widget_option_statusbar_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->statusbar );
-}
-
-static void
-widget_joy_prompt_click( void )
-{
-  widget_options_settings.joy_prompt = ! widget_options_settings.joy_prompt;
-}
-
-static void
-widget_option_joy_prompt_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->joy_prompt );
-}
-
-static void
-widget_confirm_actions_click( void )
-{
-  widget_options_settings.confirm_actions = ! widget_options_settings.confirm_actions;
-}
-
-static void
-widget_option_confirm_actions_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->confirm_actions );
-}
-
-static void
-widget_autosave_settings_click( void )
-{
-  widget_options_settings.autosave_settings = ! widget_options_settings.autosave_settings;
-}
-
-static void
-widget_option_autosave_settings_draw( int left_edge, int width, struct widget_option_entry *menu, settings_info *show )
-{
-  widget_options_print_option( left_edge, width, menu->index, menu->text, show->autosave_settings );
-}
-
 void
 widget_general_keyhandler( input_key key )
 {
@@ -1100,7 +863,7 @@ widget_general_keyhandler( input_key key )
 
 #if 0
   case INPUT_KEY_Resize:	/* Fake keypress used on window resize */
-    widget_dialog_with_border( 1, 2, 30, 2 + 16 );
+    widget_dialog_with_border( 1, 2, 30, 2 + 1 );
     widget_general_show_all( &widget_options_settings );
     break;
 #endif
@@ -1123,7 +886,7 @@ widget_general_keyhandler( input_key key )
   case INPUT_KEY_Down:
   case INPUT_KEY_6:
   case INPUT_JOYSTICK_DOWN:
-    if ( highlight_line + 1 < 16 ) {
+    if ( highlight_line + 1 < 1 ) {
       new_highlight_line = highlight_line + 1;
       cursor_pressed = 1;
     }
@@ -1137,8 +900,8 @@ widget_general_keyhandler( input_key key )
     break;
 
   case INPUT_KEY_End:
-    if ( highlight_line + 2 < 16 ) {
-      new_highlight_line = 16 - 1;
+    if ( highlight_line + 2 < 1 ) {
+      new_highlight_line = 1 - 1;
       cursor_pressed = 1;
     }
     break;

@@ -252,7 +252,7 @@ dnl Look for Wii interface (default = 0)
 if test -z "$UI"; then
   AC_MSG_CHECKING(whether Wii UI requested)
   AC_ARG_WITH(wii,
-  [  --with-wii               use Wii FB for user interface],
+  [  --with-wii              use Wii FB for user interface],
   if test "$withval" = no; then wii=no; else wii=yes; fi,
   wii=no)
   AC_MSG_RESULT($wii)
@@ -279,12 +279,27 @@ if test -z "$UI"; then
   fi
 fi
 
+dnl Are we wanting ZXDBFS support? (default=no)
+dnl Note: This will be overridden if we're building a Hermit Retro ZXZero
+dnl product
+AC_MSG_CHECKING(whether building ZXDBFS support)
+AC_ARG_WITH(zxdbfs,
+[  --with-zxdbfs           building ZXDBFS support],
+if test "$withval" = no; then
+  zxdbfs=no
+else
+  zxdbfs=yes
+  AC_DEFINE([BUILD_ZXDBFS], 1, [Defined if building the ZXDBFS support])
+fi,
+zxdbfs=no)
+AC_MSG_RESULT($zxdbfs)
+
 dnl Are we building the GPIO membrane? (default=no)
-dnl Note: This will be overridden if we're building a Hermit Retro Spectrum
+dnl Note: This will be overridden if we're building a Hermit Retro 
 dnl product
 AC_MSG_CHECKING(whether building GPIO membrane support)
 AC_ARG_WITH(gpio-membrane,
-[  --with-gpio-membrane building GPIO membrane],
+[  --with-gpio-membrane    building GPIO membrane],
 if test "$withval" = no; then
   gpiomembrane=no
 else
@@ -297,11 +312,11 @@ gpiomembrane=no)
 AC_MSG_RESULT($gpiomembrane)
 
 dnl Are we building the GPIO joystick? (default=no)
-dnl Note: This will be overridden if we're building a Hermit Retro Spectrum
+dnl Note: This will be overridden if we're building a Hermit Retro 
 dnl product
 AC_MSG_CHECKING(whether building GPIO joystick support)
 AC_ARG_WITH(gpio-joystick,
-[  --with-gpio-joystick building GPIO joystick],
+[  --with-gpio-joystick    building GPIO joystick],
 if test "$withval" = no; then
   gpiojoystick=no
 else
@@ -323,6 +338,7 @@ else
   hermitretrozxzero=yes
   CPPFLAGS="-DBUILD_HERMITRETRO_ZXZERO"
   AC_DEFINE([BUILD_HERMITRETRO_ZXZERO], 1, [Defined if building for Hermit Retro ZXZero])
+  AC_DEFINE([BUILD_ZXDBFS], 1, [Defined if building the ZXDBFS support])
   AC_DEFINE([BUILD_GPIO_MEMBRANE], 1, [Defined if building the GPIO membrane peripheral])
   AC_DEFINE([BUILD_GPIO_JOYSTICK], 1, [Defined if building the GPIO joystick peripheral])
   AC_DEFINE([NEEDS_BCM2835], 1, [Defined if building something using GPIO])

@@ -40,6 +40,8 @@ static widget_menu_entry menu_options_joysticks[] = {
 
 static widget_menu_entry menu_options[] = {
   { "Options" },
+  { "\012G\011eneral...", INPUT_KEY_g, NULL, menu_options_general, NULL, 0 },
+  { "\012M\011edia...", INPUT_KEY_m, NULL, menu_options_media, NULL, 0 },
   { "\012J\011oysticks", INPUT_KEY_j, menu_options_joysticks, NULL, NULL, 0 },
   { "\012F\011ilter...", INPUT_KEY_f, NULL, menu_options_filter, menu_filter_detail, 0 },
   { NULL }
@@ -66,8 +68,9 @@ static widget_menu_entry menu_help[] = {
 widget_menu_entry widget_menu[] = {
   { "Main menu" },
   { "\012O\011pen", INPUT_KEY_o, NULL, menu_open, NULL, 0 },
+  { "\012S\011earch", INPUT_KEY_s, NULL, menu_search, NULL, 0 },
   { "\012B\011acklight", INPUT_KEY_b, NULL, menu_backlight, NULL, 0 },
-  { "\012O\011ptions", INPUT_KEY_o, menu_options, NULL, NULL, 0 },
+  { "O\012p\011tions", INPUT_KEY_p, menu_options, NULL, NULL, 0 },
   { "\012M\011achine", INPUT_KEY_m, menu_machine, NULL, NULL, 0 },
   { "\012H\011elp", INPUT_KEY_h, menu_help, NULL, NULL, 0 },
   { NULL }

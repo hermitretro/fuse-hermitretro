@@ -149,6 +149,10 @@ gpio_membrane_init( void *context )
 {
   /** gpio_common_init() should be been called before this */
 
+  if ( gpioInit == 0 ) {
+    return 0;
+  }
+
   int rv = _gpio_membrane_init();
 
   module_register( &gpio_membrane_module_info );
@@ -217,7 +221,10 @@ _gpio_membrane_init( void )
 void
 gpio_membrane_poll( void )
 {
-  //int i;
+
+  if ( gpioInit == 0 ) {
+    return;
+  }
 
 #ifdef DEBUG2
   if ( debugFile != NULL ) {
