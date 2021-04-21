@@ -101,9 +101,11 @@ Options/_Movie..., Item
 #endif
 
 Options/_Joysticks, Branch
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(BUILD_HERMITRETRO_ZXZERO)
 Options/Joysticks/Joystick _1..., Item,, menu_options_joysticks_select, menu_joystick_1_detail, 1
+#ifndef BUILD_HERMITRETRO_ZXZERO
 Options/Joysticks/Joystick _2..., Item,, menu_options_joysticks_select, menu_joystick_2_detail, 2
+#endif
 #endif
 Options/Joysticks/_Keyboard..., Item,, menu_options_joysticks_select, menu_keyboard_joystick_detail, 3
 

@@ -73,6 +73,9 @@ hermitretro_zxzero_init( void *context )
 
   module_register( &hermitretro_zxzero_module_info );
 
+  /** Default to autosaving settings */
+  settings_current.autosave_settings = 1;
+
   /** Default to having a Kempston joystick available and the default choice */
   settings_current.joy_kempston = 1;
   settings_current.joystick_1_output = JOYSTICK_TYPE_KEMPSTON;
