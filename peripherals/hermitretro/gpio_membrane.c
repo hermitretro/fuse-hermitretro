@@ -53,9 +53,6 @@ extern int ui_widget_level;
 /** Debouncing during menu operation */
 #define GPIO_MEMBRANE_DEBOUNCE_IN_MS 50L
 
-#define NUM_COLS 5
-#define NUM_ROWS 8
-
 uint8_t colPins[NUM_COLS] = {
   PERIPHERALS_GPIO_MEMBRANE_5_4_PIN,
   PERIPHERALS_GPIO_MEMBRANE_5_3_PIN,
@@ -86,14 +83,6 @@ input_key keyMap[NUM_ROWS][NUM_COLS] = {
   { INPUT_KEY_h, INPUT_KEY_j, INPUT_KEY_k, INPUT_KEY_l, INPUT_KEY_Return },
   { INPUT_KEY_b, INPUT_KEY_n, INPUT_KEY_m, INPUT_KEY_Control_R, INPUT_KEY_space }
 };
-
-/** Shift key position */
-#define SHIFT_ROW 5
-#define SHIFT_COL 4
-
-/** Symbol shift position */
-#define SYMBOL_SHIFT_ROW 7
-#define SYMBOL_SHIFT_COL 3
 
 /** Pressed keys matrix to speed up unpresses... */
 unsigned char keysPressed[NUM_ROWS][NUM_COLS];
