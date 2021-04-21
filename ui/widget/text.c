@@ -27,6 +27,11 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "keyboard.h"
+#ifdef BUILD_HERMITRETRO_ZXZERO
+#include "peripherals/hermitretro/gpio_membrane.h"
+#endif
+
 #include "widget_internals.h"
 
 char *widget_text_text = NULL;	/* What we return the text in */
@@ -91,6 +96,20 @@ widget_text_draw_text( void )
 void
 widget_text_keyhandler( input_key key )
 {
+#ifdef BUILD_HERMITRETRO_ZXZERO
+  /**
+   * It seems input to the widgets don't go entirely via the 
+   * normal input event processing system. As such, when pressing Caps+0
+   * to delete, we get two events here that aren't collased into
+   * INPUT_KEY_BackSpace. So, look into the GPIO membrane state to
+   * figure out what to do for DELETE
+   */
+  if ( keysPressed[SHIFT_ROW][SHIFT_COL] && key == 48 ) {
+    delete_character(); widget_text_draw_text();
+    return;
+  }
+#endif
+
   switch( key ) {
 
   case INPUT_KEY_BackSpace:	/* Backspace generates DEL which is Caps + 0 */

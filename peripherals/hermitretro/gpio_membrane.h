@@ -27,6 +27,19 @@
 
 #include "gpio_membrane_pins.h"
 
+#define NUM_COLS 5
+#define NUM_ROWS 8
+
+/** Shift key position */
+#define SHIFT_ROW 5
+#define SHIFT_COL 4
+
+/** Symbol shift position */
+#define SYMBOL_SHIFT_ROW 7
+#define SYMBOL_SHIFT_COL 3
+
+extern unsigned char keysPressed[NUM_ROWS][NUM_COLS];
+
 int gpio_membrane_init( void *context );
 void gpio_membrane_end( void );
 void gpio_membrane_register_startup( void );
