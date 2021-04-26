@@ -60,6 +60,7 @@ MENU_CALLBACK( menu_search );
 #endif
 #ifdef BUILD_ZXDBFS
 MENU_CALLBACK( menu_file_search );
+MENU_CALLBACK( menu_help_zxdbfsstatus );
 #endif
 MENU_CALLBACK( menu_file_open );
 MENU_CALLBACK( menu_file_recording_continuerecording );

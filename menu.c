@@ -107,10 +107,43 @@ MENU_CALLBACK( menu_file_open )
 MENU_CALLBACK( menu_file_search )
 {
   char *filename;
+  char path[256];
+  int rv = 0;
 
   fuse_emulation_pause();
 
   widget_text_t text_data;
+
+  /** Check zxdbfsstatus in summary form */
+  unsigned char buf[2] = { 255 };
+  sprintf( path, "%s/status/summary", 
+           settings_current.zxdbfs_path );
+  FILE *f = fopen( path, "rb" );
+  if ( f == NULL ) {
+    widget_error_t error_info;
+    error_info.severity = UI_ERROR_ERROR;
+    error_info.message = "Cannot get ZXDBFS summary data! Is the ZXDBFS path correct? Is ZXDBFS running?";
+    widget_do_error( &error_info );
+    goto search_bailout;
+  }
+
+  rv = fread( buf, 1, 1, f );
+  if ( rv != 1 ) {
+    widget_error_t error_info;
+    error_info.severity = UI_ERROR_ERROR;
+    error_info.message = "Cannot get ZXDBFS summary data! Is the ZXDBFS path correct? Is ZXDBFS running?";
+    widget_do_error( &error_info );
+    goto search_bailout;
+  }
+  fclose( f );
+
+  if ( buf[0] == '1' ) {
+    widget_error_t error_info;
+    error_info.severity = UI_ERROR_ERROR;
+    error_info.message = "ZXDBFS is not available. See Help > ZXDBFS Status for more details";
+    widget_do_error( &error_info );
+    goto search_bailout;
+  }
 
   text_data.title = "ZXDBFS Search";
   text_data.allow = WIDGET_INPUT_ALNUM;
@@ -119,10 +152,9 @@ MENU_CALLBACK( menu_file_search )
   widget_do_text( &text_data );
 
   if( widget_text_text ) {
-    char dir[256];
-    sprintf( dir, "%s/search/%s", settings_current.zxdbfs_path, widget_text_text );
+    sprintf( path, "%s/search/%s", settings_current.zxdbfs_path, widget_text_text );
     /** Changing to the search results directory will trigger ZXDBFS search */
-    int rv = chdir( dir );
+    int rv = chdir( path );
     if ( rv == 0 ) {
       filename = ui_get_open_filename( "Fuse - Open Spectrum File" );
       if( !filename ) { fuse_emulation_unpause(); return; }
@@ -143,6 +175,43 @@ MENU_CALLBACK( menu_file_search )
     widget_do_error( &error_info );
   }
 
+search_bailout:
+  display_refresh_all();
+
+  fuse_emulation_unpause();
+}
+
+MENU_CALLBACK( menu_help_zxdbfsstatus )
+{
+  char path[256];
+  int rv = 0;
+  
+  fuse_emulation_pause();
+
+  /** Check zxdbfsstatus in text form */
+  unsigned char buf[1024] = { 0 };
+  sprintf( path, "%s/status/text", 
+           settings_current.zxdbfs_path );
+  FILE *f = fopen( path, "rb" );
+  if ( f == NULL ) {
+    widget_error_t error_info;
+    error_info.severity = UI_ERROR_ERROR;
+    error_info.message = "Cannot get ZXDBFS status! Is the ZXDBFS path correct? Is ZXDBFS running?";
+    widget_do_error( &error_info );
+    goto zxdbfsstatus_bailout;
+  }
+
+  rv = fread( buf, 1, sizeof( buf ), f );
+  fclose( f );
+
+  memset( &buf[rv - 1], 0, sizeof( buf ) - rv );
+
+  widget_error_t error_info;
+  error_info.severity = UI_ERROR_INFO;
+  error_info.message = (char *)buf;
+  widget_do_error( &error_info );
+
+zxdbfsstatus_bailout:
   display_refresh_all();
 
   fuse_emulation_unpause();
