@@ -52,6 +52,10 @@
 #include "ui/widget/widget_internals.h"
 #include "utils.h"
 
+#ifdef BUILD_HERMITRETRO_ZXZERO
+#include "peripherals/hermitretro/hermitretro_zxzero.h"
+#endif
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -558,6 +562,9 @@ int widget_do( widget_type which, void *data )
      * are written
      */
     sync();
+
+    /** See whether we need to do something with the Zelux state */
+    hermitretro_zxzero_toggleZelux( settings_current.backlight );
 #endif
 
     /* Refresh the Spectrum's display, including the border */
@@ -792,13 +799,7 @@ ui_popup_menu( int native_key )
     widget_do_menu( widget_menu );
     fuse_emulation_unpause();
     break;
-#ifdef BUILD_HERMITRETRO_ZXZERO
-  case INPUT_KEY_F2:
-    fuse_emulation_pause();
-    menu_backlight( 0 );
-    fuse_emulation_unpause();
-    break;
-#else
+#ifndef BUILD_HERMITRETRO_ZXZERO
   case INPUT_KEY_F2:
     fuse_emulation_pause();
     menu_file_savesnapshot( 0 );

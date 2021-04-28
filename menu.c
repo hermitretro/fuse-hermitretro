@@ -1379,10 +1379,3 @@ MENU_CALLBACK( menu_machine_didaktiksnap )
   event_add( 0, z80_nmi_event );
 }
 
-#ifdef BUILD_HERMITRETRO_ZXZERO
-MENU_CALLBACK( menu_backlight ) {
-  hermitretro_zxzero_toggleZelux();
-  ui_widget_finish();
-}
-#endif
-

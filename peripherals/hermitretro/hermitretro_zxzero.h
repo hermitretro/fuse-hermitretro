@@ -25,15 +25,13 @@
 #ifndef FUSE_PERIPHERALS_HERMITRETRO_ZXZERO_H
 #define FUSE_PERIPHERALS_HERMITRETRO_ZXZERO_H
 
-#define HERMITRETRO_ZXZERO_VERSION "1.1.0"
+#define HERMITRETRO_ZXZERO_VERSION "1.1.1"
 #define HERMITRETRO_ZXZERO_URL "https://hermitretro.com/zxzero.html"
 
 #include "bcm2835.h"
 
 #define HERMITRETRO_ZXZERO_FUSE_MENU_PIN RPI_BPLUS_GPIO_J8_15
 #define HERMITRETRO_ZXZERO_ZELUX_PWR_PIN 0  /** ID_SD, physical pin 27 */
-
-int zeluxState;
 
 int _hermitretro_zxzero_init();
 
@@ -42,6 +40,6 @@ void hermitretro_zxzero_end( void );
 void hermitretro_zxzero_register_startup( void );
 
 void hermitretro_zxzero_poll( void );
-void hermitretro_zxzero_toggleZelux( void );
+void hermitretro_zxzero_toggleZelux( int state );
 
 #endif			/* #ifndef FUSE_PERIPHERALS_HERMITRETRO_ZXZERO_H */

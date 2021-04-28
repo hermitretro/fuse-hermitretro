@@ -83,7 +83,7 @@ File/E_xit..., Item, F10
 # Hermit Retro ZXZero replacement for 'File' menu
 _Open, Item, F1
 _Search, Item, F4
-_Backlight, Item, F2
+# Backlight is now under Options > General
 #endif
 
 O_ptions, Branch

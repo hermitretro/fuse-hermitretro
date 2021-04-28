@@ -1,6 +1,10 @@
 general
 General Options
 Entry, (E)mulation speed, emulation_speed, INPUT_KEY_e, 5, %
+#ifdef BUILD_HERMITRETRO_ZXZERO
+Checkbox, (B)acklight, backlight, INPUT_KEY_b
+Entry, (D)ebounce Interval, debounce_interval, INPUT_KEY_d, 5, ms
+#endif
 #ifndef BUILD_HERMITRETRO_ZXZERO
 Entry, F(r)ame rate (1:n), frame_rate, INPUT_KEY_r, 1, frames
 Checkbox, Issue (2) keyboard, issue2, INPUT_KEY_2

@@ -51,7 +51,7 @@ extern FILE *debugFile;
 extern int ui_widget_level;
 
 /** Debouncing during menu operation */
-#define GPIO_MEMBRANE_DEBOUNCE_IN_MS 50L
+//#define GPIO_MEMBRANE_DEBOUNCE_IN_MS 50L
 
 uint8_t colPins[NUM_COLS] = {
   PERIPHERALS_GPIO_MEMBRANE_5_4_PIN,
@@ -222,9 +222,9 @@ gpio_membrane_poll( void )
 #endif
 
   /** Make the keypresses less flighty when in widget mode */
-  unsigned long long debounceInterval = GPIO_MEMBRANE_DEBOUNCE_IN_MS;
+  unsigned long long debounceInterval = settings_current.debounce_interval;
   if ( ui_widget_level > -1 ) {
-    debounceInterval *= 3;
+    debounceInterval *= 5;
   }
 
   if ( debounceEvent( debounceInterval ) ) {
