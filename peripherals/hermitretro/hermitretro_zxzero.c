@@ -63,9 +63,6 @@ static module_info_t hermitretro_zxzero_module_info = {
 int
 hermitretro_zxzero_init( void *context )
 {
-  int error;
-  char *start_scaler;
-
   int rv = _hermitretro_zxzero_init();
   if ( rv != 0 ) {
     return rv;
@@ -86,13 +83,11 @@ hermitretro_zxzero_init( void *context )
   /** Ensure full-screen as we don't want the SDL cursor */
   settings_current.full_screen = 1;
 
-  /** Default to 2x (double-size) scaler as opposed to normal */
-  /** Normal tends to smooth a bit */
-  /** This code is just lifted from fuse.c */
-  start_scaler = utils_safe_strdup( "2x" );
-
-  error = scaler_select_id( start_scaler ); libspectrum_free( start_scaler );
-  if ( error ) return error;
+  /**
+   * Don't override the default scaler here. The display initialisation
+   * order is very deferred meaning it'll either get overwritten or it'll
+   * cause weird issues
+   */
 
   return rv;
 }
@@ -108,7 +103,8 @@ hermitretro_zxzero_register_startup( void )
   startup_manager_module dependencies[] = {
     STARTUP_MANAGER_MODULE_LIBSPECTRUM,
     STARTUP_MANAGER_MODULE_SETUID,
-    STARTUP_MANAGER_MODULE_GPIO_COMMON
+    STARTUP_MANAGER_MODULE_GPIO_COMMON,
+    STARTUP_MANAGER_MODULE_DISPLAY
   };
   startup_manager_register( STARTUP_MANAGER_MODULE_HERMITRETRO_ZXZERO, 
                             dependencies,
