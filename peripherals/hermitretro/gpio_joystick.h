@@ -27,6 +27,11 @@
 
 #include "gpio_joystick_pins.h"
 
+extern unsigned char joystickPressed[19];
+
+void pressJoystick( input_key key );
+void unpressJoystick( input_key key );
+
 int gpio_joystick_init( void *context );
 void gpio_joystick_end( void );
 void gpio_joystick_register_startup( void );

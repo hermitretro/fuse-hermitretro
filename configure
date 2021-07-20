@@ -14333,9 +14333,12 @@ $as_echo "#define BUILD_ZXDBFS 1" >>confdefs.h
 
 $as_echo "#define NEEDS_BCM2835 1" >>confdefs.h
 
+
+$as_echo "#define BUILD_GPIO_JOYSTICK 1" >>confdefs.h
+
   needsbcm2835=yes
   gpiomembrane=no
-  gpiojoystick=no
+  gpiojoystick=yes
 fi
 else
   hermitretrolyra=no

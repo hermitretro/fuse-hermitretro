@@ -42,6 +42,7 @@
 #ifdef BUILD_HERMITRETRO_LYRA
 
 #include "gpio_common.h"
+#include "gpio_joystick.h"
 #include "hermitretro_lyra.h"
 #include "wiringSerial.h"
 
@@ -129,6 +130,7 @@ hermitretro_lyra_register_startup( void )
     STARTUP_MANAGER_MODULE_LIBSPECTRUM,
     STARTUP_MANAGER_MODULE_SETUID,
     STARTUP_MANAGER_MODULE_GPIO_COMMON,
+    STARTUP_MANAGER_MODULE_GPIO_JOYSTICK,
     STARTUP_MANAGER_MODULE_DISPLAY
   };
   startup_manager_register( STARTUP_MANAGER_MODULE_HERMITRETRO_LYRA, 
@@ -177,6 +179,7 @@ pressButton( uint8_t buttonIndex ) {
         volumeLevel = HERMITRETRO_LYRA_MAX_VOLUME;
       }
       /** Set ALSA volume */
+      /** Display volume bar */
       return;
     }
     case VOLUME_DOWN_INDEX: {
@@ -185,6 +188,7 @@ pressButton( uint8_t buttonIndex ) {
         volumeLevel = 0;
       }
       /** Set ALSA volume */
+      /** Display volume bar */
       break;
     }
     case TOP_LEFT_INDEX: {
@@ -341,15 +345,35 @@ hermitretro_lyra_poll( void )
       /** The remaining dpad buttons are mixable */
       if ( (buf[2] & LEFT_UP_MASK) == LEFT_UP_MASK ) {
         printf( "LEFT_UP\n" );
+        pressJoystick( INPUT_JOYSTICK_UP );
+      } else {
+        if ( joystickPressed[INPUT_JOYSTICK_UP - INPUT_JOYSTICK_UP] ) {
+          unpressJoystick( INPUT_JOYSTICK_UP );
+        }
       }
       if ( (buf[2] & LEFT_LEFT_MASK) == LEFT_LEFT_MASK ) {
         printf( "LEFT_LEFT\n" );
-      }
+        pressJoystick( INPUT_JOYSTICK_LEFT );
+      } else {
+        if ( joystickPressed[INPUT_JOYSTICK_LEFT - INPUT_JOYSTICK_UP] ) {
+          unpressJoystick( INPUT_JOYSTICK_LEFT );
+        }
+      } 
       if ( (buf[2] & LEFT_RIGHT_MASK) == LEFT_RIGHT_MASK ) {
         printf( "LEFT_RIGHT\n" );
+        pressJoystick( INPUT_JOYSTICK_RIGHT );
+      } else {
+        if ( joystickPressed[INPUT_JOYSTICK_RIGHT - INPUT_JOYSTICK_UP] ) {
+          unpressJoystick( INPUT_JOYSTICK_RIGHT );
+        }
       }
       if ( (buf[2] & LEFT_DOWN_MASK) == LEFT_DOWN_MASK ) {
         printf( "LEFT_DOWN\n" );
+        pressJoystick( INPUT_JOYSTICK_DOWN );
+      } else {
+        if ( joystickPressed[INPUT_JOYSTICK_DOWN - INPUT_JOYSTICK_UP] ) {
+          unpressJoystick( INPUT_JOYSTICK_DOWN );
+        }
       }
     }
 
@@ -380,34 +404,14 @@ hermitretro_lyra_poll( void )
       }
       if ( (buf[3] & RIGHT_DOWN_MASK) == RIGHT_DOWN_MASK ) {
         printf( "RIGHT_DOWN\n" );
+        pressJoystick( INPUT_JOYSTICK_FIRE_1 );
+      } else {
+        if ( joystickPressed[INPUT_JOYSTICK_FIRE_1 - INPUT_JOYSTICK_UP] ) {
+          unpressJoystick( INPUT_JOYSTICK_FIRE_1 );
+        }
       }
     }
   }
-
-#ifdef PANTS
-  /** Check to see whether we're pressing the "popup menu" button */
-  if ( bcm2835_gpio_lev( HERMITRETRO_LYRA_FUSE_MENU_PIN ) == LOW ) {
-#ifdef DEBUG
-    fprintf( debugFile, "fuse menu pin == LOW\n" );
-#endif
-
-    input_event_t fuse_event;
-
-    /** Check extra debouncing so we don't just pop the menu away then back again */
-    if ( debounceEvent( HERMITRETRO_LYRA_MENU_DEBOUNCE_IN_MS ) ) {
-      return;
-    }
-
-    if ( ui_widget_level > -1 ) {
-      fuse_event.types.key.native_key = INPUT_KEY_Escape;
-      fuse_event.types.key.spectrum_key = INPUT_KEY_Escape;
-    } else {
-      fuse_event.types.key.native_key = INPUT_KEY_F1;
-      fuse_event.types.key.spectrum_key = INPUT_KEY_F1;
-    }
-    fuse_event.type = INPUT_EVENT_KEYPRESS;
-  }
-#endif
 
 bailout:
   /** 

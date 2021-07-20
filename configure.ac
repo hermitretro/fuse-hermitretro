@@ -361,9 +361,10 @@ else
   AC_DEFINE([BUILD_HERMITRETRO_LYRA], 1, [Defined if building for Hermit Retro Lyra])
   AC_DEFINE([BUILD_ZXDBFS], 1, [Defined if building the ZXDBFS support])
   AC_DEFINE([NEEDS_BCM2835], 1, [Defined if building something using GPIO])
+  AC_DEFINE([BUILD_GPIO_JOYSTICK], 1, [Defined if building the GPIO joystick peripheral])
   needsbcm2835=yes
   gpiomembrane=no
-  gpiojoystick=no
+  gpiojoystick=yes
 fi,
 hermitretrolyra=no)
 AC_MSG_RESULT($hermitretrolyra)
