@@ -83,6 +83,10 @@
 #ifdef BUILD_HERMITRETRO_ZXZERO
 #include "peripherals/hermitretro/hermitretro_zxzero.h"
 #endif
+#ifdef BUILD_HERMITRETRO_LYRA
+#include "peripherals/hermitretro/gpio_common.h"
+#include "peripherals/hermitretro/hermitretro_lyra.h"
+#endif
 #include "peripherals/ide/divide.h"
 #include "peripherals/ide/divmmc.h"
 #include "peripherals/ide/simpleide.h"
@@ -195,6 +199,16 @@ int main(int argc, char **argv)
 #ifdef GEKKO
   fatInitDefault();
 #endif				/* #ifdef GEKKO */
+
+#ifdef BUILD_HERMITRETRO_LYRA
+  _gpio_common_init();
+  r = _hermitretro_lyra_init();
+  printf( "lyra: %d\n", r );
+  for ( r = 0 ; r < 1000000 ; r++ ) {
+    hermitretro_lyra_poll();
+  }
+  hermitretro_lyra_end();
+#endif
   
   if(fuse_init(argc,argv)) {
     fprintf(stderr,"%s: error initialising -- giving up!\n", fuse_progname);
@@ -328,6 +342,9 @@ run_startup_manager( int *argc, char ***argv )
 #endif
 #ifdef BUILD_HERMITRETRO_ZXZERO
   hermitretro_zxzero_register_startup();
+#endif
+#ifdef BUILD_HERMITRETRO_LYRA
+  hermitretro_lyra_register_startup();
 #endif
   if1_register_startup();
   if2_register_startup();
@@ -502,7 +519,7 @@ creator_register_startup( void )
 
 static void fuse_show_copyright(void)
 {
-#ifndef BUILD_HERMITRETRO_ZXZERO
+#if !defined(BUILD_HERMITRETRO_ZXZERO) && !defined(BUILD_HERMITRETRO_LYRA)
   printf( "\n" );
   fuse_show_version();
   printf(

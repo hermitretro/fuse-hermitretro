@@ -328,7 +328,7 @@ fi,
 gpiojoystick=no)
 AC_MSG_RESULT($gpiojoystick)
 
-dnl Are we building a Hermit Retro Spectrum ZXZero?
+dnl Are we building for Hermit Retro Spectrum ZXZero?
 AC_MSG_CHECKING(whether building for Hermit Retro ZXZero)
 AC_ARG_WITH(hermitretro-zxzero,
 [  --with-hermitretro-zxzero building for Hermit Retro ZXZero],
@@ -348,6 +348,25 @@ else
 fi,
 hermitretrozxzero=no)
 AC_MSG_RESULT($hermitretrozxzero)
+
+dnl Are we building for Hermit Retro Lyra?
+AC_MSG_CHECKING(whether building for Hermit Retro Lyra)
+AC_ARG_WITH(hermitretro-lyra,
+[  --with-hermitretro-lyra   building for Hermit Retro Lyra],
+if test "$withval" = no; then
+  hermitretrolyra=no
+else
+  hermitretrolyra=yes
+  CPPFLAGS="-DBUILD_HERMITRETRO_LYRA"
+  AC_DEFINE([BUILD_HERMITRETRO_LYRA], 1, [Defined if building for Hermit Retro Lyra])
+  AC_DEFINE([BUILD_ZXDBFS], 1, [Defined if building the ZXDBFS support])
+  AC_DEFINE([NEEDS_BCM2835], 1, [Defined if building something using GPIO])
+  needsbcm2835=yes
+  gpiomembrane=no
+  gpiojoystick=no
+fi,
+hermitretrolyra=no)
+AC_MSG_RESULT($hermitretrolyra)
 
 dnl Are we building under buildroot? This has an effect on search paths for SDL
 dnl (default=no)
@@ -509,6 +528,7 @@ fi
 AM_CONDITIONAL(UI_FB, test "$UI" = fb)
 AM_CONDITIONAL(UI_GTK, test "$UI" = gtk)
 AM_CONDITIONAL(BUILD_HERMITRETRO_ZXZERO, test "$hermitretrozxzero" = yes)
+AM_CONDITIONAL(BUILD_HERMITRETRO_LYRA, test "$hermitretrolyra" = yes)
 AM_CONDITIONAL(BUILD_GPIO_MEMBRANE, test "$gpiomembrane" = yes)
 AM_CONDITIONAL(BUILD_GPIO_JOYSTICK, test "$gpiojoystick" = yes)
 AM_CONDITIONAL(NEEDS_BCM2835, test "$needsbcm2835" = yes)

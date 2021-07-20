@@ -15,6 +15,9 @@
 /* Defined if building the GPIO membrane peripheral */
 #undef BUILD_GPIO_MEMBRANE
 
+/* Defined if building for Hermit Retro Lyra */
+#undef BUILD_HERMITRETRO_LYRA
+
 /* Defined if building for Hermit Retro ZXZero */
 #undef BUILD_HERMITRETRO_ZXZERO
 

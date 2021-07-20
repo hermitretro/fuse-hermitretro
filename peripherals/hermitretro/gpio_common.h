@@ -33,6 +33,7 @@ int debounceEvent( unsigned long long debounceInterval );
 void updateLastEventTime();
 
 int gpio_common_init( void *context );
+int _gpio_common_init();
 void gpio_common_end( void );
 void gpio_common_register_startup( void );
 

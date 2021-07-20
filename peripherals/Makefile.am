@@ -92,6 +92,12 @@ fuse_SOURCES += \
                 peripherals/hermitretro/gpio_joystick.c
 endif
 
+if BUILD_HERMITRETRO_LYRA
+fuse_SOURCES += \
+                peripherals/hermitretro/hermitretro_lyra.c \
+                peripherals/hermitretro/wiringSerial.c
+endif
+
 noinst_HEADERS += \
                   peripherals/ay.h \
                   peripherals/covox.h \

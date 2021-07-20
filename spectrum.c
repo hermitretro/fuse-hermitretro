@@ -44,6 +44,9 @@
 #ifdef BUILD_HERMITRETRO_ZXZERO
 #include "peripherals/hermitretro/hermitretro_zxzero.h"
 #endif
+#ifdef BUILD_HERMITRETRO_LYRA
+#include "peripherals/hermitretro/hermitretro_lyra.h"
+#endif
 #include "peripherals/printer.h"
 #include "peripherals/ula.h"
 #include "phantom_typist.h"
@@ -113,6 +116,9 @@ spectrum_frame_event_fn( libspectrum_dword last_tstates, int type,
 #endif
 #ifdef BUILD_GPIO_JOYSTICK
   gpio_joystick_poll();
+#endif
+#ifdef BUILD_HERMITRETRO_LYRA
+  hermitretro_lyra_poll();
 #endif
   ui_joystick_poll();
   timer_estimate_speed();

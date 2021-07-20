@@ -36,7 +36,7 @@
 #include "module.h"
 #include "settings.h"
 
-#if defined(BUILD_GPIO_MEMBRANE) || defined(BUILD_GPIO_JOYSTICK)
+//#if defined(BUILD_GPIO_MEMBRANE) || defined(BUILD_GPIO_JOYSTICK)
 
 //#define DEBUG
 #undef DEBUG
@@ -58,11 +58,22 @@ static module_info_t gpio_common_module_info = {
 int
 gpio_common_init( void *context )
 {
-  gpioInit = bcm2835_init();
-
-  updateLastEventTime();
+  _gpio_common_init();
 
   module_register( &gpio_common_module_info );
+
+  return 0;
+}
+
+int
+_gpio_common_init() {
+
+  printf( "here\n" );
+
+  gpioInit = bcm2835_init();
+  printf( "gpioInit: %d\n", gpioInit );
+
+  updateLastEventTime();
 
   return 0;
 }
@@ -120,5 +131,5 @@ int debounceEvent( unsigned long long debounceInterval ) {
   return 0;
 }
 
-#endif /** BUILD_GPIO_MEMBRANE || BUILD_GPIO_JOYSTICK */
+//#endif /** BUILD_GPIO_MEMBRANE || BUILD_GPIO_JOYSTICK */
 
