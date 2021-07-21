@@ -68,10 +68,7 @@ gpio_common_init( void *context )
 int
 _gpio_common_init() {
 
-  printf( "here\n" );
-
   gpioInit = bcm2835_init();
-  printf( "gpioInit: %d\n", gpioInit );
 
   updateLastEventTime();
 

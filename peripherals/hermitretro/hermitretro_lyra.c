@@ -130,7 +130,6 @@ hermitretro_lyra_register_startup( void )
     STARTUP_MANAGER_MODULE_LIBSPECTRUM,
     STARTUP_MANAGER_MODULE_SETUID,
     STARTUP_MANAGER_MODULE_GPIO_COMMON,
-    STARTUP_MANAGER_MODULE_GPIO_JOYSTICK,
     STARTUP_MANAGER_MODULE_DISPLAY
   };
   startup_manager_register( STARTUP_MANAGER_MODULE_HERMITRETRO_LYRA, 
@@ -193,7 +192,7 @@ pressButton( uint8_t buttonIndex ) {
     }
     case TOP_LEFT_INDEX: {
       /** Display the Fuse menu -- this requires some special handling to stop it being really jittery */
-input_event_t fuse_event;
+      input_event_t fuse_event;
 
       /** Check extra debouncing so we don't just pop the menu away then back again */
       if ( debounceEvent( HERMITRETRO_LYRA_DEBOUNCE_IN_MS ) ) {
@@ -233,7 +232,7 @@ void
 releaseButton( uint8_t buttonIndex ) {
 
   if ( buttonsPressed[buttonIndex] ) {
-    printf( "release: %d\n", buttonIndex );
+    //printf( "release: %d\n", buttonIndex );
   } else {
     //printf( "don't release: %d\n", buttonIndex );
   }
@@ -264,151 +263,164 @@ hermitretro_lyra_poll( void )
   /** Request a packet from the 32u4 */
   serialPutchar( serialfd, 0xAA );
   serialFlush( serialfd );
-  bcm2835_delay( 50 );
 
-  /** Read the serial port */
-  /** @@FIXME: Loop for 75ms. The ATMega32u4 should have responded by now */
+  /** Read the serial port for max 75ms */
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  unsigned long long t =
+      (unsigned long long)(tv.tv_sec) * 1000 +
+      (unsigned long long)(tv.tv_usec) / 1000;
+  unsigned long long pollStartTime = t;
+  while ( serialDataAvail( serialfd ) != 5 && (t - pollStartTime) < 75L ) {
+    gettimeofday(&tv, NULL);
+    t =
+      (unsigned long long)(tv.tv_sec) * 1000 +
+      (unsigned long long)(tv.tv_usec) / 1000;
+    bcm2835_delay( 5 );
+  }
+
   rv = serialDataAvail( serialfd );
 //  printf( "avail: %d\n", rv );
-  if ( rv == 5 ) {
-    uint8_t buf[5] = { 0x00 }; 
-    buf[0] = serialGetchar( serialfd );
-    buf[1] = serialGetchar( serialfd );
-    buf[2] = serialGetchar( serialfd );
-    buf[3] = serialGetchar( serialfd );
-    buf[4] = serialGetchar( serialfd );
-//    printf( "got packets: %X %X %X %X %X\n", buf[0], buf[1], buf[2], buf[3], buf[4] );
+  if ( rv != 5 ) {
+    goto bailout;
+  }
 
-    /** Decode packets */
-    uint8_t checksum = (buf[0] + buf[1] + buf[2] + buf[3]) ^ 0xFF;
-    if ( checksum != buf[4] ) {
-        printf( "bad checksum: %X != %X\n", checksum, buf[4] );
-        goto bailout;
+  uint8_t buf[5] = { 0x00 }; 
+  buf[0] = serialGetchar( serialfd );
+  buf[1] = serialGetchar( serialfd );
+  buf[2] = serialGetchar( serialfd );
+  buf[3] = serialGetchar( serialfd );
+  buf[4] = serialGetchar( serialfd );
+//  printf( "got packets: %X %X %X %X %X\n", buf[0], buf[1], buf[2], buf[3], buf[4] );
+
+  /** Decode packets */
+  uint8_t checksum = (buf[0] + buf[1] + buf[2] + buf[3]) ^ 0xFF;
+  if ( checksum != buf[4] ) {
+//    printf( "bad checksum: %X != %X\n", checksum, buf[4] );
+    goto bailout;
+  } else {
+    //printf( "checksums match\n" );
+  }
+
+  /**
+   * Packet structure (this needs to match the hermitretro-lyra-32u4 firmware)
+   * Byte0 = 00000000 | BATTERY (quantise to 6 bits) 
+   * Byte1 = 01000000 | VOLUME_UP << 2 | VOLUME_DOWN << 1 | BOTTOM_RIGHT_3
+   * Byte2 = 10000000 | TOP_LEFT << 5 | LEFT_UP << 4 | LEFT_LEFT << 3 | LEFT_RIGHT << 2 | LEFT_DOWN << 1 | TOP_RIGHT
+   * Byte3 = 11000000 | RIGHT_UP << 5 | RIGHT_LEFT << 4 | RIGHT_RIGHT << 3 | RIGHT_DOWN << 2 | BOTTOM_RIGHT_1 << 1 | BOTTOM_RIGHT_2
+   * Byte4 = checksum
+   */
+  if ( (buf[0] & TYPE_MASK) == B0_TYPE ) {
+    //printf( "got B0\n" );
+    /** Decode the battery level */
+  }
+
+  /** These are mutually exclusive buttons */
+  if ( (buf[1] & TYPE_MASK) == B1_TYPE ) {
+    //printf( "got B1: " );
+    if ( (buf[1] & VOLUME_UP_MASK) == VOLUME_UP_MASK ) {
+      //printf( "VOLUP\n" );
+      goto bailout;
+    }
+
+    if ( (buf[1] & VOLUME_DOWN_MASK) == VOLUME_DOWN_MASK ) {
+      //printf( "VOLDOWN\n" );
+      pressButton( VOLUME_DOWN_INDEX );
+      goto bailout;
     } else {
-        //printf( "checksums match\n" );
+      //printf( "VOLDOWN RELEASE\n" );
+      releaseButton( VOLUME_DOWN_INDEX );
     }
 
-    /**
-     * Packet structure (this needs to match the hermitretro-lyra-32u4 firmware)
-     * Byte0 = 00000000 | BATTERY (quantise to 6 bits) 
-     * Byte1 = 01000000 | VOLUME_UP << 2 | VOLUME_DOWN << 1 | BOTTOM_RIGHT_3
-     * Byte2 = 10000000 | TOP_LEFT << 5 | LEFT_UP << 4 | LEFT_LEFT << 3 | LEFT_RIGHT << 2 | LEFT_DOWN << 1 | TOP_RIGHT
-     * Byte3 = 11000000 | RIGHT_UP << 5 | RIGHT_LEFT << 4 | RIGHT_RIGHT << 3 | RIGHT_DOWN << 2 | BOTTOM_RIGHT_1 << 1 | BOTTOM_RIGHT_2
-     * Byte4 = checksum
+    if ( (buf[1] & BOTTOM_RIGHT_3_MASK) == BOTTOM_RIGHT_3_MASK ) {
+      //printf( "BOTTOM_RIGHT_3\n" );
+      goto bailout;
+    }
+  }
 
-     */
-    if ( (buf[0] & TYPE_MASK) == B0_TYPE ) {
-      //printf( "got B0\n" );
-      /** Decode the battery level */
+  /** These are generally mixable buttons, i.e., diagonals */
+  if ( (buf[2] & TYPE_MASK) == B2_TYPE ) {
+    //printf( "got B2: " );
+    /** The TOP_LEFT and TOP_RIGHT are not mixable */
+    if ( (buf[2] & TOP_LEFT_MASK) == TOP_LEFT_MASK ) {
+      //printf( "TOP_LEFT\n" );
+      pressButton( TOP_LEFT_INDEX );
+      goto bailout;
+    } else {
+      releaseButton( TOP_LEFT_INDEX );
     }
 
-    /** These are mutually exclusive buttons */
-    if ( (buf[1] & TYPE_MASK) == B1_TYPE ) {
-      //printf( "got B1: " );
-      if ( (buf[1] & VOLUME_UP_MASK) == VOLUME_UP_MASK ) {
-        printf( "VOLUP\n" );
-        goto bailout;
-      }
-
-      if ( (buf[1] & VOLUME_DOWN_MASK) == VOLUME_DOWN_MASK ) {
-        printf( "VOLDOWN\n" );
-        pressButton( VOLUME_DOWN_INDEX );
-        goto bailout;
-      } else {
-        //printf( "VOLDOWN RELEASE\n" );
-        releaseButton( VOLUME_DOWN_INDEX );
-      }
-
-      if ( (buf[1] & BOTTOM_RIGHT_3_MASK) == BOTTOM_RIGHT_3_MASK ) {
-        printf( "BOTTOM_RIGHT_3\n" );
-        goto bailout;
-      }
+    if ( (buf[2] & TOP_RIGHT_MASK) == TOP_RIGHT_MASK ) {
+      //printf( "TOP_RIGHT\n" );
+      goto bailout;
     }
 
-    /** These are generally mixable buttons, i.e., diagonals */
-    if ( (buf[2] & TYPE_MASK) == B2_TYPE ) {
-      //printf( "got B2: " );
-      /** The TOP_LEFT and TOP_RIGHT are not mixable */
-      if ( (buf[2] & TOP_LEFT_MASK) == TOP_LEFT_MASK ) {
-        printf( "TOP_LEFT\n" );
-        pressButton( TOP_LEFT_INDEX );
-        goto bailout;
-      } else {
-        releaseButton( TOP_LEFT_INDEX );
-      }
-
-      if ( (buf[2] & TOP_RIGHT_MASK) == TOP_RIGHT_MASK ) {
-        printf( "TOP_RIGHT\n" );
-        goto bailout;
-      }
-
-      /** The remaining dpad buttons are mixable */
-      if ( (buf[2] & LEFT_UP_MASK) == LEFT_UP_MASK ) {
-        printf( "LEFT_UP\n" );
-        pressJoystick( INPUT_JOYSTICK_UP );
-      } else {
-        if ( joystickPressed[INPUT_JOYSTICK_UP - INPUT_JOYSTICK_UP] ) {
-          unpressJoystick( INPUT_JOYSTICK_UP );
-        }
-      }
-      if ( (buf[2] & LEFT_LEFT_MASK) == LEFT_LEFT_MASK ) {
-        printf( "LEFT_LEFT\n" );
-        pressJoystick( INPUT_JOYSTICK_LEFT );
-      } else {
-        if ( joystickPressed[INPUT_JOYSTICK_LEFT - INPUT_JOYSTICK_UP] ) {
-          unpressJoystick( INPUT_JOYSTICK_LEFT );
-        }
-      } 
-      if ( (buf[2] & LEFT_RIGHT_MASK) == LEFT_RIGHT_MASK ) {
-        printf( "LEFT_RIGHT\n" );
-        pressJoystick( INPUT_JOYSTICK_RIGHT );
-      } else {
-        if ( joystickPressed[INPUT_JOYSTICK_RIGHT - INPUT_JOYSTICK_UP] ) {
-          unpressJoystick( INPUT_JOYSTICK_RIGHT );
-        }
-      }
-      if ( (buf[2] & LEFT_DOWN_MASK) == LEFT_DOWN_MASK ) {
-        printf( "LEFT_DOWN\n" );
-        pressJoystick( INPUT_JOYSTICK_DOWN );
-      } else {
-        if ( joystickPressed[INPUT_JOYSTICK_DOWN - INPUT_JOYSTICK_UP] ) {
-          unpressJoystick( INPUT_JOYSTICK_DOWN );
-        }
+    /** The remaining dpad buttons are mixable */
+    if ( (buf[2] & LEFT_UP_MASK) == LEFT_UP_MASK ) {
+      //printf( "LEFT_UP\n" );
+      pressJoystick( INPUT_JOYSTICK_UP );
+    } else {
+      if ( joystickPressed[INPUT_JOYSTICK_UP - INPUT_JOYSTICK_UP] ) {
+        unpressJoystick( INPUT_JOYSTICK_UP );
       }
     }
+    if ( (buf[2] & LEFT_LEFT_MASK) == LEFT_LEFT_MASK ) {
+      //printf( "LEFT_LEFT\n" );
+      pressJoystick( INPUT_JOYSTICK_LEFT );
+    } else {
+      if ( joystickPressed[INPUT_JOYSTICK_LEFT - INPUT_JOYSTICK_UP] ) {
+        unpressJoystick( INPUT_JOYSTICK_LEFT );
+      }
+    } 
+    if ( (buf[2] & LEFT_RIGHT_MASK) == LEFT_RIGHT_MASK ) {
+      //printf( "LEFT_RIGHT\n" );
+      pressJoystick( INPUT_JOYSTICK_RIGHT );
+    } else {
+      if ( joystickPressed[INPUT_JOYSTICK_RIGHT - INPUT_JOYSTICK_UP] ) {
+        unpressJoystick( INPUT_JOYSTICK_RIGHT );
+      }
+    }
+    if ( (buf[2] & LEFT_DOWN_MASK) == LEFT_DOWN_MASK ) {
+      //printf( "LEFT_DOWN\n" );
+      pressJoystick( INPUT_JOYSTICK_DOWN );
+    } else {
+      if ( joystickPressed[INPUT_JOYSTICK_DOWN - INPUT_JOYSTICK_UP] ) {
+        unpressJoystick( INPUT_JOYSTICK_DOWN );
+      }
+    }
+  }
 
-    /** These are generally mixable buttons, i.e., diagonals */
-    if ( (buf[3] & TYPE_MASK) == B3_TYPE ) {
-      //printf( "got B3: " );
+  /** These are generally mixable buttons, i.e., diagonals */
+  if ( (buf[3] & TYPE_MASK) == B3_TYPE ) {
+    //printf( "got B3: " );
 
-      /** The BOTTOM_RIGHT_1 and BOTTOM_RIGHT_2 are not mixable */
-      if ( (buf[3] & BOTTOM_RIGHT_1_MASK) == BOTTOM_RIGHT_1_MASK ) {
-        printf( "BOTTOM_RIGHT_1\n" );
-        goto bailout;
-      }
+    /** The BOTTOM_RIGHT_1 and BOTTOM_RIGHT_2 are not mixable */
+    if ( (buf[3] & BOTTOM_RIGHT_1_MASK) == BOTTOM_RIGHT_1_MASK ) {
+      //printf( "BOTTOM_RIGHT_1\n" );
+      goto bailout;
+    }
 
-      if ( (buf[3] & BOTTOM_RIGHT_2_MASK) == BOTTOM_RIGHT_2_MASK ) {
-        printf( "BOTTOM_RIGHT_2\n" );
-        goto bailout;
-      }
+    if ( (buf[3] & BOTTOM_RIGHT_2_MASK) == BOTTOM_RIGHT_2_MASK ) {
+      //printf( "BOTTOM_RIGHT_2\n" );
+      goto bailout;
+    }
 
-      /** The remaining dpad buttons are mixable */
-      if ( (buf[3] & RIGHT_UP_MASK) == RIGHT_UP_MASK ) {
-        printf( "RIGHT_UP\n" );
-      }
-      if ( (buf[3] & RIGHT_LEFT_MASK) == RIGHT_LEFT_MASK ) {
-        printf( "RIGHT_LEFT\n" );
-      }
-      if ( (buf[3] & RIGHT_RIGHT_MASK) == RIGHT_RIGHT_MASK ) {
-        printf( "RIGHT_RIGHT\n" );
-      }
-      if ( (buf[3] & RIGHT_DOWN_MASK) == RIGHT_DOWN_MASK ) {
-        printf( "RIGHT_DOWN\n" );
-        pressJoystick( INPUT_JOYSTICK_FIRE_1 );
-      } else {
-        if ( joystickPressed[INPUT_JOYSTICK_FIRE_1 - INPUT_JOYSTICK_UP] ) {
-          unpressJoystick( INPUT_JOYSTICK_FIRE_1 );
-        }
+    /** The remaining dpad buttons are mixable */
+    if ( (buf[3] & RIGHT_UP_MASK) == RIGHT_UP_MASK ) {
+      //printf( "RIGHT_UP\n" );
+    }
+    if ( (buf[3] & RIGHT_LEFT_MASK) == RIGHT_LEFT_MASK ) {
+      //printf( "RIGHT_LEFT\n" );
+    }
+    if ( (buf[3] & RIGHT_RIGHT_MASK) == RIGHT_RIGHT_MASK ) {
+      //printf( "RIGHT_RIGHT\n" );
+    }
+    if ( (buf[3] & RIGHT_DOWN_MASK) == RIGHT_DOWN_MASK ) {
+      //printf( "RIGHT_DOWN\n" );
+      pressJoystick( INPUT_JOYSTICK_FIRE_1 );
+    } else {
+      if ( joystickPressed[INPUT_JOYSTICK_FIRE_1 - INPUT_JOYSTICK_UP] ) {
+        unpressJoystick( INPUT_JOYSTICK_FIRE_1 );
       }
     }
   }

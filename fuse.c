@@ -200,6 +200,7 @@ int main(int argc, char **argv)
   fatInitDefault();
 #endif				/* #ifdef GEKKO */
 
+#ifdef LYRA_TEST
 #ifdef BUILD_HERMITRETRO_LYRA
   _gpio_common_init();
   r = _hermitretro_lyra_init();
@@ -208,6 +209,7 @@ int main(int argc, char **argv)
     hermitretro_lyra_poll();
   }
   hermitretro_lyra_end();
+#endif
 #endif
   
   if(fuse_init(argc,argv)) {
@@ -334,10 +336,10 @@ run_startup_manager( int *argc, char ***argv )
 #if defined(BUILD_GPIO_JOYSTICK) || defined(BUILD_GPIO_MEMBRANE)
   gpio_common_register_startup();
 #endif
-#ifdef BUILD_GPIO_MEMBRANE
+#if defined(BUILD_HERMITRETRO_ZXZERO) && defined(BUILD_GPIO_MEMBRANE)
   gpio_membrane_register_startup();
 #endif
-#ifdef BUILD_GPIO_JOYSTICK
+#if defined(BUILD_HERMITRETRO_ZXZERO) && defined(BUILD_GPIO_JOYSTICK)
   gpio_joystick_register_startup();
 #endif
 #ifdef BUILD_HERMITRETRO_ZXZERO

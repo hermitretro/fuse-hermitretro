@@ -31,6 +31,9 @@
 #ifdef BUILD_HERMITRETRO_ZXZERO
 #include "peripherals/hermitretro/hermitretro_zxzero.h"
 #endif
+#ifdef BUILD_HERMITRETRO_LYRA
+#include "peripherals/hermitretro/hermitretro_lyra.h"
+#endif
 
 int
 widget_about_draw( void *data GCC_UNUSED )
@@ -43,7 +46,7 @@ widget_about_draw( void *data GCC_UNUSED )
   margin = 17;
   line = 0;
 
-#ifdef BUILD_HERMITRETRO_ZXZERO
+#if defined(BUILD_HERMITRETRO_ZXZERO) || defined(BUILD_HERMITRETRO_LYRA)
   dialog_rows += 4;
 #endif
 
@@ -88,6 +91,22 @@ widget_about_draw( void *data GCC_UNUSED )
   string_width = widget_stringwidth( HERMITRETRO_ZXZERO_URL );
   x = margin - 8 + ( dialog_cols * 8 - string_width ) / 2;
   widget_printstring( x, ++line * 8 + 24, 0x09, HERMITRETRO_ZXZERO_URL );
+#endif
+#ifdef BUILD_HERMITRETRO_LYRA
+  ++line;
+
+  string_width = widget_stringwidth( "Hermit Retro Lyra" );
+  x = margin - 8 + ( dialog_cols * 8 - string_width ) / 2;
+  widget_printstring( x, ++line * 8 + 24, WIDGET_COLOUR_FOREGROUND, "Hermit Retro Lyra" );
+
+  snprintf( buffer, 80, "Version %s", HERMITRETRO_LYRA_VERSION );
+  string_width = widget_stringwidth( buffer );
+  x = margin - 8 + ( dialog_cols * 8 - string_width ) / 2;
+  widget_printstring( x, ++line * 8 + 24, WIDGET_COLOUR_FOREGROUND, buffer );
+
+  string_width = widget_stringwidth( HERMITRETRO_LYRA_URL );
+  x = margin - 8 + ( dialog_cols * 8 - string_width ) / 2;
+  widget_printstring( x, ++line * 8 + 24, 0x09, HERMITRETRO_LYRA_URL );
 #endif
 
   widget_display_lines( 2, line + 3 );

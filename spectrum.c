@@ -111,10 +111,10 @@ spectrum_frame_event_fn( libspectrum_dword last_tstates, int type,
 #ifdef BUILD_HERMITRETRO_ZXZERO
   hermitretro_zxzero_poll();
 #endif
-#ifdef BUILD_GPIO_MEMBRANE
+#if defined(BUILD_HERMITRETRO_ZXZERO) && defined(BUILD_GPIO_MEMBRANE)
   gpio_membrane_poll();
 #endif
-#ifdef BUILD_GPIO_JOYSTICK
+#if defined(BUILD_HERMITRETRO_ZXZERO) && defined(BUILD_GPIO_JOYSTICK)
   gpio_joystick_poll();
 #endif
 #ifdef BUILD_HERMITRETRO_LYRA

@@ -38,10 +38,17 @@
 #include "ui/scaler/scaler.h"
 #include "menu.h"
 
+#ifdef BUILD_GPIO_MEMBRANE
+#include "peripherals/hermitretro/gpio_membrane.h"
+#endif
+#ifdef BUILD_GPIO_JOYSTICK
+#include "peripherals/hermitretro/gpio_joystick.h"
+#endif
 #ifdef BUILD_HERMITRETRO_ZXZERO
 #include "peripherals/hermitretro/hermitretro_zxzero.h"
-#include "peripherals/hermitretro/gpio_membrane.h"
-#include "peripherals/hermitretro/gpio_joystick.h"
+#endif
+#ifdef BUILD_HERMITRETRO_LYRA
+#include "peripherals/hermitretro/hermitretro_lyra.h"
 #endif
 
 static void
@@ -151,6 +158,11 @@ ui_event( void )
     hermitretro_zxzero_poll();
     gpio_membrane_poll();
     gpio_joystick_poll();
+  }
+#endif
+#ifdef BUILD_HERMITRETRO_LYRA
+  if ( ui_widget_level > -1 ) {
+    hermitretro_lyra_poll();
   }
 #endif
 
