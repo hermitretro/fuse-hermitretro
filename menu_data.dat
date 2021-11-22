@@ -19,7 +19,7 @@
 
 # Philip Kendall <philip-fuse@shadowmagic.org.uk>
 
-#ifdef BUILD_HERMITRETRO_LYRA
+#ifndef BUILD_HERMITRETRO_LYRA
 _File, Branch
 File/_Open..., Item, F3
 #ifdef BUILD_ZXDBFS

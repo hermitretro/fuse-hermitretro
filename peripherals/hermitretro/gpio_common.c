@@ -48,6 +48,8 @@ extern FILE *debugFile;
 
 #include "gpio_common.h"
 
+int gpioInit = 0;
+
 /** Debouncing during menu operation */
 static unsigned long long lastEventTime = 0;
 

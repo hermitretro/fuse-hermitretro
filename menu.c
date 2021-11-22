@@ -75,7 +75,7 @@ static int menu_select_machine_roms( libspectrum_machine machine, size_t start,
 static int menu_select_peripheral_roms( const char *peripheral_name,
 					size_t start, size_t n );
 
-#ifdef BUILD_HERMITRETRO_ZXZERO
+#if defined(BUILD_HERMITRETRO_ZXZERO) || defined(BUILD_HERMITRETRO_LYRA)
 MENU_CALLBACK( menu_open ) {
     menu_file_open( 0 );
 }

@@ -224,7 +224,7 @@ print << "CODE";
 static size_t highlight_line = 0;
 
 /* General functions used by the options dialogs */
-settings_info widget_options_settings;
+extern settings_info widget_options_settings;
 int widget_options_print_option( int left_edge, int width, int number, const char* string, int value );
 int widget_options_print_value( int left_edge, int width, int number, int value );
 int widget_options_print_entry( int left_edge, int width, int number, const char *prefix, int value,

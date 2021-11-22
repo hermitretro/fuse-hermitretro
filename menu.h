@@ -53,7 +53,7 @@
  * Things defined in menu.c
  */
 
-#ifdef BUILD_HERMITRETRO_ZXZERO
+#if defined(BUILD_HERMITRETRO_ZXZERO) || defined(BUILD_HERMITRETRO_LYRA)
 MENU_CALLBACK( menu_open );
 MENU_CALLBACK( menu_backlight );
 MENU_CALLBACK( menu_search );

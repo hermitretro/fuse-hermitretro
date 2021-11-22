@@ -42,6 +42,12 @@
 #include "ui/uidisplay.h"
 #include "utils.h"
 
+#undef DEBUG
+//#define DEBUG
+#ifdef DEBUG
+extern FILE *debugFile;
+#endif
+
 SDL_Surface *sdldisplay_gc = NULL;   /* Hardware screen */
 static SDL_Surface *tmp_screen=NULL; /* Temporary screen for scalers */
 
@@ -294,6 +300,13 @@ uidisplay_init( int width, int height )
 
   /* We can now output error messages to our output device */
   display_ui_initialised = 1;
+
+#ifdef DEBUG
+  if ( debugFile != NULL ) {
+    fprintf( debugFile, "image: %d x %d\n", image_width, image_height );
+    fflush( debugFile );
+  }
+#endif
 
   sdl_load_status_icon( "cassette.bmp", red_cassette, green_cassette );
   sdl_load_status_icon( "microdrive.bmp", red_mdr, green_mdr );

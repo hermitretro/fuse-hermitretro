@@ -46,8 +46,8 @@
 #include "hermitretro_lyra.h"
 #include "wiringSerial.h"
 
-//#define DEBUG 1
-#undef DEBUG
+#define DEBUG 1
+// #undef DEBUG
 #ifdef DEBUG
 FILE *debugFile = NULL;
 #endif
@@ -150,14 +150,14 @@ _hermitretro_lyra_init( void )
 
   if ( gpioInit == 0 ) {
     printf( "Failed to init GPIO\n" );
-    return -1;
+    // return -1;
   }
 
   /** Initialise the serial port which communicates with the ATMega32u4 */
   serialfd = serialOpen( "/dev/ttyACM0", 9600 );
   if ( serialfd < 0 ) {
     printf( "Failed to open serial port: %d\n", serialfd );
-    return -1;
+    // return -1;
   }
 
   return 0;
