@@ -27,7 +27,7 @@
 
 #include "bcm2835.h"
 
-int gpioInit;
+extern int gpioInit;
 
 int debounceEvent( unsigned long long debounceInterval );
 void updateLastEventTime();
