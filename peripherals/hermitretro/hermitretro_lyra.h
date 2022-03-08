@@ -52,7 +52,7 @@
 #include "bcm2835.h"
 
 #define HERMITRETRO_LYRA_MAX_VOLUME 40
-int volumeLevel;    /** 0..100% */
+extern int volumeLevel;    /** 0..100% */
 
 int _hermitretro_lyra_init();
 

@@ -59,6 +59,9 @@ extern int ui_widget_level;
 /** Serial port */
 int serialfd = -1;
 
+/** Current volume level */
+int volumeLevel = 0;
+
 #define TOP_LEFT_INDEX 0
 #define LEFT_UP_INDEX 1
 #define LEFT_LEFT_INDEX 2
@@ -280,7 +283,7 @@ hermitretro_lyra_poll( void )
   }
 
   rv = serialDataAvail( serialfd );
-//  printf( "avail: %d\n", rv );
+  fprintf( debugFile, "avail: %d\n", rv );
   if ( rv != 5 ) {
     goto bailout;
   }
@@ -291,7 +294,8 @@ hermitretro_lyra_poll( void )
   buf[2] = serialGetchar( serialfd );
   buf[3] = serialGetchar( serialfd );
   buf[4] = serialGetchar( serialfd );
-//  printf( "got packets: %X %X %X %X %X\n", buf[0], buf[1], buf[2], buf[3], buf[4] );
+  fprintf( debugFile, "got packets: %X %X %X %X %X\n", buf[0], buf[1], buf[2], buf[3], buf[4] );
+  fflush( debugFile );
 
   /** Decode packets */
   uint8_t checksum = (buf[0] + buf[1] + buf[2] + buf[3]) ^ 0xFF;
