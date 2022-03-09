@@ -283,7 +283,7 @@ hermitretro_lyra_poll( void )
   }
 
   rv = serialDataAvail( serialfd );
-  fprintf( debugFile, "avail: %d\n", rv );
+  //fprintf( debugFile, "avail: %d\n", rv );
   if ( rv != 5 ) {
     goto bailout;
   }
@@ -294,13 +294,13 @@ hermitretro_lyra_poll( void )
   buf[2] = serialGetchar( serialfd );
   buf[3] = serialGetchar( serialfd );
   buf[4] = serialGetchar( serialfd );
-  fprintf( debugFile, "got packets: %X %X %X %X %X\n", buf[0], buf[1], buf[2], buf[3], buf[4] );
+//  fprintf( debugFile, "got packets: %X %X %X %X %X\n", buf[0], buf[1], buf[2], buf[3], buf[4] );
   fflush( debugFile );
 
   /** Decode packets */
   uint8_t checksum = (buf[0] + buf[1] + buf[2] + buf[3]) ^ 0xFF;
   if ( checksum != buf[4] ) {
-//    printf( "bad checksum: %X != %X\n", checksum, buf[4] );
+    fprintf( debugFile, "bad checksum: %X != %X\n", checksum, buf[4] );
     goto bailout;
   } else {
     //printf( "checksums match\n" );
@@ -315,13 +315,16 @@ hermitretro_lyra_poll( void )
    * Byte4 = checksum
    */
   if ( (buf[0] & TYPE_MASK) == B0_TYPE ) {
-    //printf( "got B0\n" );
+//    fprintf( debugFile, "got B0\n" );
     /** Decode the battery level */
+    uint8_t batlevel = buf[0] & (TYPE_MASK ^ 0xFF);
+//    fprintf( debugFile, "batlevel: %d\n", batlevel );
   }
 
   /** These are mutually exclusive buttons */
   if ( (buf[1] & TYPE_MASK) == B1_TYPE ) {
-    //printf( "got B1: " );
+#ifdef PANTS
+    fprintf( debugFile, "got B1: " );
     if ( (buf[1] & VOLUME_UP_MASK) == VOLUME_UP_MASK ) {
       //printf( "VOLUP\n" );
       goto bailout;
@@ -340,14 +343,15 @@ hermitretro_lyra_poll( void )
       //printf( "BOTTOM_RIGHT_3\n" );
       goto bailout;
     }
+#endif
   }
 
   /** These are generally mixable buttons, i.e., diagonals */
   if ( (buf[2] & TYPE_MASK) == B2_TYPE ) {
-    //printf( "got B2: " );
+//    fprintf( debugFile, "got B2: " );
     /** The TOP_LEFT and TOP_RIGHT are not mixable */
     if ( (buf[2] & TOP_LEFT_MASK) == TOP_LEFT_MASK ) {
-      //printf( "TOP_LEFT\n" );
+//      fprintf( debugFile, "TOP_LEFT\n" );
       pressButton( TOP_LEFT_INDEX );
       goto bailout;
     } else {
@@ -355,13 +359,13 @@ hermitretro_lyra_poll( void )
     }
 
     if ( (buf[2] & TOP_RIGHT_MASK) == TOP_RIGHT_MASK ) {
-      //printf( "TOP_RIGHT\n" );
+//      fprintf( debugFile, "TOP_RIGHT\n" );
       goto bailout;
     }
 
     /** The remaining dpad buttons are mixable */
     if ( (buf[2] & LEFT_UP_MASK) == LEFT_UP_MASK ) {
-      //printf( "LEFT_UP\n" );
+//      fprintf( debugFile, "LEFT_UP\n" );
       pressJoystick( INPUT_JOYSTICK_UP );
     } else {
       if ( joystickPressed[INPUT_JOYSTICK_UP - INPUT_JOYSTICK_UP] ) {
@@ -369,7 +373,7 @@ hermitretro_lyra_poll( void )
       }
     }
     if ( (buf[2] & LEFT_LEFT_MASK) == LEFT_LEFT_MASK ) {
-      //printf( "LEFT_LEFT\n" );
+//      fprintf( debugFile, "LEFT_LEFT\n" );
       pressJoystick( INPUT_JOYSTICK_LEFT );
     } else {
       if ( joystickPressed[INPUT_JOYSTICK_LEFT - INPUT_JOYSTICK_UP] ) {
@@ -377,7 +381,7 @@ hermitretro_lyra_poll( void )
       }
     } 
     if ( (buf[2] & LEFT_RIGHT_MASK) == LEFT_RIGHT_MASK ) {
-      //printf( "LEFT_RIGHT\n" );
+//      fprintf( debugFile, "LEFT_RIGHT\n" );
       pressJoystick( INPUT_JOYSTICK_RIGHT );
     } else {
       if ( joystickPressed[INPUT_JOYSTICK_RIGHT - INPUT_JOYSTICK_UP] ) {
@@ -385,7 +389,7 @@ hermitretro_lyra_poll( void )
       }
     }
     if ( (buf[2] & LEFT_DOWN_MASK) == LEFT_DOWN_MASK ) {
-      //printf( "LEFT_DOWN\n" );
+//      fprintf( debugFile, "LEFT_DOWN\n" );
       pressJoystick( INPUT_JOYSTICK_DOWN );
     } else {
       if ( joystickPressed[INPUT_JOYSTICK_DOWN - INPUT_JOYSTICK_UP] ) {
