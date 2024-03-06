@@ -128,6 +128,7 @@ _hermitretro_zxzero_init( void )
 
   /** Fuse menu button */
   bcm2835_gpio_fsel( HERMITRETRO_ZXZERO_FUSE_MENU_PIN, BCM2835_GPIO_FSEL_INPT );
+  bcm2835_gpio_set_pud( HERMITRETRO_ZXZERO_FUSE_MENU_PIN, BCM2835_GPIO_PUD_UP );
 
   /** Zelux switch */
   bcm2835_gpio_fsel( HERMITRETRO_ZXZERO_ZELUX_PWR_PIN, BCM2835_GPIO_FSEL_OUTP );
